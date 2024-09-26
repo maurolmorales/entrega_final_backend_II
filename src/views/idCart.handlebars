@@ -1,0 +1,13 @@
+{{>header}}
+
+<div class="container">
+  <div>
+    <ul>
+    {{#each data.products}}   
+      <li>{{product.title}}</li>
+    {{/each}}
+    </ul>
+    <p>status: {{data.status}}</p>
+    <p>date: {{data.date}}</p>
+  </div>
+</div>

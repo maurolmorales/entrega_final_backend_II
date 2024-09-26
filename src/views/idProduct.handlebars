@@ -1,0 +1,12 @@
+{{>header}}
+
+<div class="container">
+  <div>
+    <h2>{{data.title}}</h2>
+    <p>{{data.description}}</p>
+    <p>Código: {{data.code}}</p>
+    <p>Precio: {{data.price}}</p>
+    <p>Categoría: {{data.category}}</p>
+    {{> buttonAddCart param=data._id}}
+  </div>
+</div>
