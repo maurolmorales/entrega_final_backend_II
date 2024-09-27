@@ -1,15 +1,9 @@
-const passport = require("passport");
-const passportJWT = require("passport-jwt");
-const local = require("passport-local");
-require("dotenv").config();
-const {
-  getUser_manager,
-  addUser_manager,
-} = require("../managers/users.manager.js");
-const {
-  generateHash,
-  validatePassword,
-} = require("../utils.js");
+import passport from "passport";
+import { Strategy, ExtractJwt } from "passport-jwt";
+import { Strategy as _Strategy } from "passport-local";
+//require("dotenv").config();
+import { User_DAO } from "../managers/users.manager.js";
+import { Utils } from "../utils.js";
 
 const buscarToken = (req) => {
   let token = null;
@@ -21,9 +15,8 @@ const buscarToken = (req) => {
 
 const initPassport = () => {
   //registro
-  passport.use(
-    "registro", // nombre de la estrategia asignada
-    new local.Strategy(
+  passport.use( "registro", // nombre de la estrategia asignada
+    new _Strategy(
       {
         passReqToCallback: true,
         usernameField: "email",
@@ -35,7 +28,7 @@ const initPassport = () => {
             return done(null, false, { message: "Faltan datos requeridos" });
           }
 
-          let existe = await getUser_manager({ email: username });
+          let existe = await User_DAO.getUser_manager({ email: username });
           if (existe) {
             console.log("usuario repetido");
             return done(null, false, { message: "El usuario ya existe" });
@@ -46,11 +39,11 @@ const initPassport = () => {
             last_name,
             age,
             email: username,
-            password: generateHash(password),
+            password: Utils.generateHash(password),
             role,
           };
 
-          let result = await addUser_manager(newUser);
+          let result = await User_DAO.addUser_manager(newUser);
 
           return done(null, result);
         } catch (error) {
@@ -62,21 +55,23 @@ const initPassport = () => {
   );
 
   //login
-  passport.use(
-    "login",
-    new local.Strategy(
+  passport.use( "login",
+    new _Strategy(
       {
         usernameField: "email",
       },
       async (username, password, done) => {
         try {
-          let usuario = await getUser_manager({ email: username });
+          let usuario = await User_DAO.getUser_manager({ email: username });
           if (!usuario) {
             console.log("usuario No encontrado");
             return done(null, false, { message: "Usuario no existe." });
           }
 
-          const isPasswordValid = validatePassword(password, usuario.password);
+          const isPasswordValid = Utils.validatePassword(
+            password,
+            usuario.password
+          );
           if (!isPasswordValid) {
             console.log("contraseña inválida");
             return done(null, false, { message: "Contraseña inválida" });
@@ -93,18 +88,17 @@ const initPassport = () => {
   );
 
   //current
-  passport.use(
-    "current",
-    new passportJWT.Strategy(
+  passport.use( "current",
+    new Strategy(
       {
-        jwtFromRequest: new passportJWT.ExtractJwt.fromExtractors([
+        jwtFromRequest: new ExtractJwt.fromExtractors([
           (req) => req.cookies.jwt_token,
         ]),
         secretOrKey: process.env.SECRET,
       },
       async (contenidoToken, done) => {
         try {
-          const user = await getUser_manager(contenidoToken.id);
+          const user = await User_DAO.getUser_manager(contenidoToken.id);
           console.log("contenido user: ", user);
           if (!user) {
             return done(null, false, { message: "Usuario no encontrado" });
@@ -118,4 +112,4 @@ const initPassport = () => {
   );
 };
 
-module.exports = { initPassport };
+export { initPassport };

@@ -1,14 +1,11 @@
-const User = require("../models/user.model.js");
+import userSchema from "../models/user.model.js";
 
-const addUser_manager = async (user_p) => {
-  return await User.create(user_p);
-};
+export class User_DAO {
+  static addUser_manager = async (user_p) => {
+    return await userSchema.create(user_p);
+  };
 
-const getUser_manager = async (filtro = {}) => {
-  return await User.findOne(filtro).lean();
-};
-
-module.exports = {
-  addUser_manager,
-  getUser_manager,
-};
+  static getUser_manager = async (filtro = {}) => {
+    return await userSchema.findOne(filtro).lean();
+  };
+}

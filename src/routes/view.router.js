@@ -1,12 +1,13 @@
-const express = require("express");
-const routerView = express.Router();
-const { authView } = require("../middlewares/auth.js");
+import { Router } from "express";
+const routerView = Router();
 
-routerView.get("/realtimeproducts", authView, (req, res) => {
+// agregar authView a cada ruta 
+
+routerView.get("/realtimeproducts", (req, res) => {
   res.render("realTimeProducts", {  user:req.user, pageTitle:"RealTimeProducts"});
 });
 
-routerView.get("/products", authView, async (req, res) => {
+routerView.get("/products", async (req, res) => {
   try {
     const baseurl = process.env.BASE_URL;
     const queryParams = new URLSearchParams(req.query).toString(); // para pasar los parámetros de query
@@ -18,7 +19,7 @@ routerView.get("/products", authView, async (req, res) => {
   }
 });
 
-routerView.get("/products/:pid", authView, async (req, res) => {
+routerView.get("/products/:pid", async (req, res) => {
   try {
     const pid = req.params.pid;
     const baseurl = process.env.BASE_URL;
@@ -30,7 +31,7 @@ routerView.get("/products/:pid", authView, async (req, res) => {
   }
 });
 
-routerView.get("/carts", authView, async (req, res) => {
+routerView.get("/carts", async (req, res) => {
   try {
     const baseurl = process.env.BASE_URL;
     const response = await fetch(baseurl + "/api/carts");
@@ -41,7 +42,7 @@ routerView.get("/carts", authView, async (req, res) => {
   }
 });
 
-routerView.get("/carts/:cid", authView, async (req, res) => {
+routerView.get("/carts/:cid", async (req, res) => {
   try {
     const cid = req.params.cid;
     const baseurl = process.env.BASE_URL;
@@ -61,7 +62,7 @@ routerView.get("/register", (req, res) => {
   res.render("userRegister");
 });
 
-routerView.get("/", authView, (req, res) => {
+routerView.get("/", (req, res) => {
   res.render("index", { user: req.user });
 });
 
@@ -69,4 +70,4 @@ routerView.get("*", (req, res) => {
   res.status(404).render("notFound", { user: req.user });
 });
 
-module.exports = routerView;
+export {routerView};

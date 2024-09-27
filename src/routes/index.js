@@ -1,14 +1,14 @@
-const express = require("express");
-const router = express.Router();
-const cartsRouter = require("./carts.router.js");
-const productsRouter = require("./products.router.js");
-const userRouter = require("./users.router.js");
-const routerView = require('./view.router.js')
+import { Router } from "express";
+const routes = Router();
+import { cartsRouter } from "./carts.router.js";
+import { productsRouter } from "./products.router.js";
+import { userRouter } from "./users.router.js";
+import { routerView } from "./view.router.js";
 
-router.use("/api/carts", cartsRouter);
-router.use("/api/products", productsRouter);
-router.use("/api/sessions", userRouter);
-router.use("/", routerView);
-router.use("*", routerView);
+routes.use("/api/carts", cartsRouter);
+routes.use("/api/products", productsRouter);
+routes.use("/api/sessions", userRouter);
+routes.use("/", routerView);
+routes.use("*", routerView);
 
-module.exports = router;
+export { routes };

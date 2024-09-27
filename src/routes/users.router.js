@@ -1,13 +1,13 @@
-const express = require("express");
-const router = express.Router();
-const passport = require("passport");
-const {
+import { Router } from "express";
+const userRouter = Router();
+import passport from "passport";
+import {
   addUser_controller,
   loginUser_controller,
-} = require("../controllers/users.controllers.js");
+} from "../controllers/users.controllers.js";
 
 //registro
-router.post(
+userRouter.post(
   "/registro",
   passport.authenticate("registro", {
     session: false,
@@ -17,7 +17,7 @@ router.post(
 );
 
 //login
-router.post(
+userRouter.post(
   "/login",
   passport.authenticate("login", {
     session: false,
@@ -28,7 +28,7 @@ router.post(
 );
 
 //current
-router.get(
+userRouter.get(
   "/current",
   passport.authenticate("current", { session: false }),
   (req, res) => {
@@ -37,18 +37,17 @@ router.get(
 );
 
 // Logout
-router.get("/logout", (req, res) => {
+userRouter.get("/logout", (req, res) => {
   let { web } = req.query;
 
   // Eliminar la cookie jwt_token
-  res.clearCookie("jwt_token"
-  , { httpOnly: true}
-  );
+  res.clearCookie("jwt_token", { httpOnly: true });
 
-  if (web) { return res.redirect("/login")}
+  if (web) {
+    return res.redirect("/login");
+  }
   res.setHeader("Content-Type", "application/json");
   return res.status(200).json({ payload: "Logout exitoso" });
 });
 
-
-module.exports = router;
+export { userRouter };

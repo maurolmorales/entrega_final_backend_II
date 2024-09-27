@@ -1,11 +1,4 @@
-const mongoose = require("mongoose");
-const {
-  getAllProducts_manager,
-  getOneProduct_manager,
-  createProduct_manager,
-  deleteOneProduct_manager,
-  updateOneProduct_manager,
-} = require("../managers/product-manager.js");
+import { Product_DAO } from "../managers/product-manager.js";
 
 const getAllProducts_controller = async (req, res) => {
   try {
@@ -13,41 +6,47 @@ const getAllProducts_controller = async (req, res) => {
     const options = {
       limit: parseInt(limit),
       page: parseInt(page),
-      sort: sort ? {price: sort == 'asc' ? 1 : -1} : {}, // ordena por precio acendente
+      sort: sort ? { price: sort == "asc" ? 1 : -1 } : {}, // ordena por precio acendente
       lean: true, // para devolver objetos planos.
     };
-  
-    const filter = query ? {category: query } : {};
 
-    const products = await getAllProducts_manager(filter, options);
+    const filter = query ? { category: query } : {};
+
+    const products = await Product_DAO.getAllProducts_manager(filter, options);
     //const productsData = await JSON.parse(JSON.stringify(products));
-    
+
     const paginationInfo = {
       pageTitle: "Lista de Productos",
-      status: 'success',
-      productsData: products.docs,// payload
-      totalPages:   products.totalPages,
-      currentPage:  products.page,
-      hasPrevPage:  products.hasPrevPage,
-      hasNextPage:  products.hasNextPage,
-      prevPage:     products.prevPage,
-      nextPage:     products.nextPage,
-      prevLink:     products.hasPrevPage ? `/products?limit=${limit}&page=${products.prevPage}&sort=${sort}&query=${query}` : null,
-      nextLink:     products.hasNextPage ? `/products?limit=${limit}&page=${products.nextPage}&sort=${sort}&query=${query}` : null,
-    }
-    res.status(200).json(paginationInfo)
-  } catch (error) { 
+      status: "success",
+      productsData: products.docs, // payload
+      totalPages: products.totalPages,
+      currentPage: products.page,
+      hasPrevPage: products.hasPrevPage,
+      hasNextPage: products.hasNextPage,
+      prevPage: products.prevPage,
+      nextPage: products.nextPage,
+      prevLink: products.hasPrevPage
+        ? `/products?limit=${limit}&page=${products.prevPage}&sort=${sort}&query=${query}`
+        : null,
+      nextLink: products.hasNextPage
+        ? `/products?limit=${limit}&page=${products.nextPage}&sort=${sort}&query=${query}`
+        : null,
+    };
+    res.status(200).json(paginationInfo);
+  } catch (error) {
     console.error("Error obteniendo productos:", error);
-    res.status(500).json({ status: 'error', message: error.message });
+    res.status(500).json({ status: "error", message: error.message });
   }
 };
 
 const getOneProduct_controller = async (req, res) => {
   try {
-    const productFound = await getOneProduct_manager(req.params.pid);
+    const productFound = await Product_DAO.getOneProduct_manager(
+      req.params.pid
+    );
     if (productFound) {
       const plainProduct = JSON.parse(JSON.stringify(productFound));
-      res.status(200).json(plainProduct)
+      res.status(200).json(plainProduct);
     } else {
       res.status(404).json({ error: "Producto no encontrado" });
     }
@@ -119,7 +118,7 @@ const createProduct_controller = async (req, res) => {
         .json({ error: "Category no válida o inexistente" });
     }
 
-    const savedProduct = await createProduct_manager(prodBody);
+    const savedProduct = await Product_DAO.createProduct_manager(prodBody);
     return res.status(201).json(savedProduct);
   } catch (error) {
     return res.status(500).json({ error: "Error al crear el producto" });
@@ -129,7 +128,10 @@ const createProduct_controller = async (req, res) => {
 const updateOneProduct_controller = async (req, res) => {
   try {
     const prodBody = req.body;
-    const product = await updateOneProduct_manager(req.params.pid, prodBody);
+    const product = await Product_DAO.updateOneProduct_manager(
+      req.params.pid,
+      prodBody
+    );
     if (product) {
       return res
         .status(200)
@@ -144,7 +146,7 @@ const updateOneProduct_controller = async (req, res) => {
 
 const deleteOneProduct_controller = async (req, res) => {
   try {
-    const product = await deleteOneProduct_manager(req.params.pid);
+    const product = await Product_DAO.deleteOneProduct_manager(req.params.pid);
     if (product) {
       res.status(200).json({ message: "Producto Eliminado" });
     } else {
@@ -155,10 +157,10 @@ const deleteOneProduct_controller = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   getAllProducts_controller,
   getOneProduct_controller,
   createProduct_controller,
   updateOneProduct_controller,
-  deleteOneProduct_controller
+  deleteOneProduct_controller,
 };

@@ -1,11 +1,8 @@
-const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
+import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 
-const {
-  addUser_manager,
-  getUser_manager,
-} = require("../managers/users.manager.js");
-const { generaJWT, validatePassword, generateHash } = require("../utils.js");
+import { User_DAO } from "../managers/users.manager.js";
+import { Utils } from "../utils.js";
 
 const errorPassport_controller = (req, res) => {
   res.setHeader("Content-Type", "application/json");
@@ -36,7 +33,7 @@ const addUser_controller = async (req, res) => {
       return res.status(404).json({ error: "Error al registrar el usuario" });
     }
 
-    const token = generaJWT({ id: userFound._id, role: userFound.role }); // Genera el JWT con el ID y rol del usuario
+    const token = Utils.generaJWT({ id: userFound._id, role: userFound.role }); // Genera el JWT con el ID y rol del usuario
     res.setHeader("Content-Type", "application/json");
     return res.status(201).json({ message: "Registro exitoso", token });
   } catch (error) {
@@ -64,16 +61,16 @@ const loginUser_controller = async (req, res) => {
   const { email, password } = req.body;
   console.log("email: ", email, "pass: ", password);
   try {
-    const user = await getUser_manager({ email });
+    const user = await User_DAO.getUser_manager({ email });
     if (!user) {
       return res.status(400).json({ error: "Usuario No Encontrado" });
     }
-    if (!validatePassword(password, user.password)) {
+    if (!Utils.validatePassword(password, user.password)) {
       return res.status(400).json({ error: "Credenciales inválidas" });
     }
-    
+
     // genera el jwt con el id y rol del usuario
-    const token = generaJWT({ id: user._id, role: user.role }); 
+    const token = Utils.generaJWT({ id: user._id, role: user.role });
     res.cookie("jwt_token", token, { httpOnly: true }); // Guardar el JWT en una cookie
     console.log("Login Exitoso");
     res.setHeader("Content-Type", "application/json");
@@ -83,7 +80,7 @@ const loginUser_controller = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   errorPassport_controller,
   addUser_controller,
   loginUser_controller,

@@ -1,61 +1,55 @@
-const Product = require("../models/product-model.js");
+import productSchema from "../models/product-model.js";
 
-const getAllProducts_manager = async (filter, options) => {
-  try {
-    const products = await Product.paginate(filter, options);
-    return products;
-  } catch (error) {
-    throw new Error("Error al obtener los productos con paginación");
-  }
-};
+export class Product_DAO {
 
-const getOneProduct_manager = async (id) => {
-  try {
-    return await Product.findById(id);
-  } catch (error) {
-    throw new Error("Error al obtener el producto");
-  }
-};
+  static getAllProducts_manager = async (filter, options) => {
+    try {
+      const products = await productSchema.paginate(filter, options);
+      return products;
+    } catch (error) {
+      throw new Error("Error al obtener los productos con paginación");
+    }
+  };
 
-const createProduct_manager = async (data) => {
-  try {
-    const product = new Product(data);
-    return await product.save();
-  } catch (error) {
-    throw new Error("Error al crear el producto");
-  }
-};
+  static getOneProduct_manager = async (id) => {
+    try {
+      return await productSchema.findById(id);
+    } catch (error) {
+      throw new Error("Error al obtener el producto");
+    }
+  };
 
-const updateOneProduct_manager = async (id) => {
-  try {
-    return await Product.updateOneProduct(id);
-  } catch (error) {
-    throw new Error("Error al actualizar el producto");
-  }
-};
+  static createProduct_manager = async (data) => {
+    try {
+      const product = new productSchema.Product(data);
+      return await productSchema.save();
+    } catch (error) {
+      throw new Error("Error al crear el producto");
+    }
+  };
 
-const deleteOneProduct_manager = async (id) => {
-  try {
-    return await Product.findByIdAndDelete(id);
-  } catch (error) {
-    throw new Error("Error al eliminar el producto");
-  }
-};
+  static updateOneProduct_manager = async (id) => {
+    try {
+      return await productSchema.updateOneProduct(id);
+    } catch (error) {
+      throw new Error("Error al actualizar el producto");
+    }
+  };
 
-const getAllProductsRealTime_manager = async () => {
-  try {
-    const products = await Product.find().sort({ _id: -1 }).limit(3);
-    return products;
-  } catch (error) {
-    throw new Error("Error al obtener los productos con paginación");
-  }
-};
+  static deleteOneProduct_manager = async (id) => {
+    try {
+      return await productSchema.findByIdAndDelete(id);
+    } catch (error) {
+      throw new Error("Error al eliminar el producto");
+    }
+  };
 
-module.exports = {
-  getAllProducts_manager,
-  getOneProduct_manager,
-  createProduct_manager,
-  updateOneProduct_manager,
-  deleteOneProduct_manager,
-  getAllProductsRealTime_manager
-};
+  static getAllProductsRealTime_manager = async () => {
+    try {
+      const products = await productSchema.find().sort({ _id: -1 }).limit(3);
+      return products;
+    } catch (error) {
+      throw new Error("Error al obtener los productos con paginación");
+    }
+  };
+}

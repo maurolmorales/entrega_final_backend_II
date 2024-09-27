@@ -1,25 +1,17 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cookieParser = require('cookie-parser');
-require("dotenv").config();
-const path = require("path");
-const exphbs = require("express-handlebars");
-const { createServer } = require("http");
-const { Server } = require("socket.io");
-const routes = require("./routes/index.js");
-const methodOverride = require("method-override");
-
-//const sessions = require("express-session");
-// const MongoStore = require("connect-mongo");
-
-const passport = require("passport");
-const { initPassport } = require("./config/passport.config.js");
-
-const {
-  createProduct_manager,
-  deleteOneProduct_manager,
-  getAllProductsRealTime_manager,
-} = require("./managers/product-manager.js");
+import express, { json, urlencoded } from "express";
+import { ConnectDB } from "./db/ConnectDB.js";
+import cookieParser from "cookie-parser";
+import { configGral } from "./config/configGral.js";
+import { __dirname } from "./config/path.utils.js";
+import path from "path";
+import { engine } from "express-handlebars";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import { routes } from "./routes/index.js";
+import methodOverride from "method-override";
+import passport from "passport";
+import { initPassport } from "./config/passport.config.js";
+import { Product_DAO } from "./managers/product-manager.js";
 
 /* --- Inicialización ---------------------------------------------- */
 const app = express();
@@ -27,30 +19,27 @@ const httpServer = createServer(app);
 const io = new Server(httpServer);
 
 /* --- Conexión a MongoDB ------------------------------------------- */
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log("MONGO connected");
-  })
-  .catch((error) => {
-    console.error(error);
-  });
-
-/*---- handlebars ----------------------------------------------------- */
-app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
-app.set("view engine", "handlebars");
-app.set("views", path.join(__dirname, "/views"));
+await ConnectDB.conectar(configGral.MONGODB_URI, configGral.DB_NAME);
 
 /*----- Middlewares ---------------------------------------------------- */
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "/public")));
+app.use(json());
+app.use(urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "../public/")));
 app.use(methodOverride("_method"));
 app.use(cookieParser());
 
 initPassport();
-app.use(passport.initialize()) 
+app.use(passport.initialize());
+
 // app.use(passport.session()) // solo si se usa express session
+
+/*---- handlebars ----------------------------------------------------- */
+app.engine("handlebars", engine({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+//app.set("views", path.join(__dirname, "../views"));
+app.set("views", "./src/views");
+console.log('asd', __dirname)
+
 
 
 /*---- socket conexión -------------------------------------------------- */
@@ -58,19 +47,19 @@ io.on("connection", async (socket) => {
   console.log("Un cliente se ha conectado");
 
   const updatedProducts = async () => {
-    const socketProducts = await getAllProductsRealTime_manager();
+    const socketProducts = await Product_DAO.getAllProductsRealTime_manager();
     socket.emit("allProducts", socketProducts);
   };
 
   updatedProducts();
 
   socket.on("nuevoProducto", async (data) => {
-    await createProduct_manager(data);
+    await Product_DAO.createProduct_manager(data);
     updatedProducts();
   });
 
   socket.on("deleteProduct", async (data) => {
-    await deleteOneProduct_manager(data);
+    await Product_DAO.deleteOneProduct_manager(data);
     updatedProducts();
   });
 });
@@ -86,4 +75,4 @@ app.use((err, req, res, next) => {
 });
 
 /*----------------------------------------------------------------------- */
-module.exports = { httpServer };
+export { httpServer };
