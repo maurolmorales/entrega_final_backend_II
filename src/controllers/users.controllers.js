@@ -1,8 +1,7 @@
-import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-
-import { User_DAO } from "../managers/users.manager.js";
+import { User_Mongo_DAO } from "../dao/users_mongo_dao.js";
 import { Utils } from "../utils.js";
+import { UsersService } from "../services/users.service.js";
 
 const errorPassport_controller = (req, res) => {
   res.setHeader("Content-Type", "application/json");
@@ -10,30 +9,13 @@ const errorPassport_controller = (req, res) => {
 };
 
 const addUser_controller = async (req, res) => {
-  // const { first_name, last_name, age, email, password, role } = req.body;
   try {
-    // if (!first_name || !last_name || !age || !email || !password || !role) {
-    //   return res
-    //     .status(400)
-    //     .json({ error: "Faltan datos requeridos para el registro" });
-    // }
-
-    // let userController = {
-    //   first_name,
-    //   last_name,
-    //   age,
-    //   email,
-    //   password: generateHash(password),
-    //   role,
-    // };
-
-    //const userFound = await addUser_manager(userController);
     const userFound = req.user;
     if (!userFound) {
       return res.status(404).json({ error: "Error al registrar el usuario" });
     }
-
-    const token = Utils.generaJWT({ id: userFound._id, role: userFound.role }); // Genera el JWT con el ID y rol del usuario
+    // Genera el JWT con el ID y rol del usuario
+    const token = Utils.generaJWT({ id: userFound._id, role: userFound.role }); 
     res.setHeader("Content-Type", "application/json");
     return res.status(201).json({ message: "Registro exitoso", token });
   } catch (error) {
@@ -61,7 +43,7 @@ const loginUser_controller = async (req, res) => {
   const { email, password } = req.body;
   console.log("email: ", email, "pass: ", password);
   try {
-    const user = await User_DAO.getUser_manager({ email });
+    const user = await User_Mongo_DAO.getUser_manager({ email });
     if (!user) {
       return res.status(400).json({ error: "Usuario No Encontrado" });
     }
@@ -80,9 +62,22 @@ const loginUser_controller = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  try {
+    let usuarios = await UsersService.getAllUsers();
+    return res.status(200).json({ usuarios });
+  } catch (error) {
+    return res.status(500).json({
+      error: "error inesperado",
+      detalle: error.message,
+    });
+  }
+};
+
 export {
   errorPassport_controller,
   addUser_controller,
   loginUser_controller,
   loginUserJWT_controller,
+  getAllUsers,
 };

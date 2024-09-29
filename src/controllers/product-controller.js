@@ -1,4 +1,4 @@
-import { Product_DAO } from "../managers/product-manager.js";
+import { ProductService } from "../services/product.service.js";
 
 const getAllProducts_controller = async (req, res) => {
   try {
@@ -12,7 +12,7 @@ const getAllProducts_controller = async (req, res) => {
 
     const filter = query ? { category: query } : {};
 
-    const products = await Product_DAO.getAllProducts_manager(filter, options);
+    const products = await ProductService.getAllProducts(filter, options);
     //const productsData = await JSON.parse(JSON.stringify(products));
 
     const paginationInfo = {
@@ -41,9 +41,7 @@ const getAllProducts_controller = async (req, res) => {
 
 const getOneProduct_controller = async (req, res) => {
   try {
-    const productFound = await Product_DAO.getOneProduct_manager(
-      req.params.pid
-    );
+    const productFound = await ProductService.getOneProduct(req.params.pid);
     if (productFound) {
       const plainProduct = JSON.parse(JSON.stringify(productFound));
       res.status(200).json(plainProduct);
@@ -118,7 +116,7 @@ const createProduct_controller = async (req, res) => {
         .json({ error: "Category no válida o inexistente" });
     }
 
-    const savedProduct = await Product_DAO.createProduct_manager(prodBody);
+    const savedProduct = await ProductService.createProduct(prodBody);
     return res.status(201).json(savedProduct);
   } catch (error) {
     return res.status(500).json({ error: "Error al crear el producto" });
@@ -128,7 +126,7 @@ const createProduct_controller = async (req, res) => {
 const updateOneProduct_controller = async (req, res) => {
   try {
     const prodBody = req.body;
-    const product = await Product_DAO.updateOneProduct_manager(
+    const product = await ProductService.updateOneProduct(
       req.params.pid,
       prodBody
     );
@@ -146,7 +144,7 @@ const updateOneProduct_controller = async (req, res) => {
 
 const deleteOneProduct_controller = async (req, res) => {
   try {
-    const product = await Product_DAO.deleteOneProduct_manager(req.params.pid);
+    const product = await ProductService.deleteOneProduct(req.params.pid);
     if (product) {
       res.status(200).json({ message: "Producto Eliminado" });
     } else {

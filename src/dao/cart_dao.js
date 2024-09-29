@@ -1,9 +1,9 @@
-import cartSchema from "../models/cart-model.js";
+import cartSchema from "./models/cart-model.js";
 
 export class Cart_DAO {
-
-  static getAllCarts_manager = async () => {
-    const carts = await cartSchema.find()
+  static getAll = async () => {
+    const carts = await cartSchema
+      .find()
       .populate("products.product")
       .sort({ status: -1 });
     if (!carts) {
@@ -12,11 +12,11 @@ export class Cart_DAO {
     return carts;
   };
 
-  static getOneCart_manager = async (id) => {
+  static getOne = async (id) => {
     return await cartSchema.findById(id).populate("products.product");
   };
 
-  static addProdToCart_manager = async (pid) => {
+  static addProdToCart = async (pid) => {
     // Buscar un carrito con estado "open"
     try {
       let cart = await cartSchema.findOne({ status: "open" });
@@ -43,7 +43,7 @@ export class Cart_DAO {
     }
   };
 
-  static closeCart_manager = async (cid) => {
+  static closeCart = async (cid) => {
     try {
       const cart = await cartSchema.findByIdAndUpdate(
         cid,
@@ -56,12 +56,12 @@ export class Cart_DAO {
     }
   };
 
-  static createCart_manager = async (data) => {
+  static createCart = async (data) => {
     const cart = new cartSchema.Cart(data);
     return await cart.save();
   };
 
-  static delProdToCart_manager = async (cid, pid) => {
+  static delProdToCart = async (cid, pid) => {
     try {
       // Encuentra el carrito por su ID
       const cart = await cartSchema.findById(cid);
@@ -84,7 +84,7 @@ export class Cart_DAO {
     }
   };
 
-  static emptyCart_manager = async (cid) => {
+  static emptyCart = async (cid) => {
     return await cartSchema.findByIdAndUpdate(
       cid, // el id del documento que se actualiza
       { $set: { products: [] } }, // Vaciar el array de productos
@@ -92,11 +92,11 @@ export class Cart_DAO {
     );
   };
 
-  static updateOneCart_manager = async (id) => {
+  static updateOne = async (id) => {
     return await cartSchema.updateOneCart(id);
   };
 
-  static deleteOneCart_manager = async (id) => {
+  static deleteOne = async (id) => {
     return await cartSchema.findByIdAndDelete(id);
   };
 }

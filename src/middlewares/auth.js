@@ -1,5 +1,5 @@
-import { Utils } from "../utils.js";
 import { User_DAO } from "../managers/users.manager.js";
+import { Utils } from "../utils.js";
 
 const getTokenFromCookies = (cookies) => {
   const { jwt_token: token } = cookies;

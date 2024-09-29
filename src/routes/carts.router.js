@@ -22,6 +22,6 @@ cartsRouter.delete("/:cid/products/:pid", delProdToCart_controller);
 
 cartsRouter.delete("/:cid", emptyCart_controller);
 
-//cartsRouter.delete("/:cid/purchase", completePurchase_controller);
+//cartsRouter.post("/:cid/purchase", completePurchase_controller);
 
 export { cartsRouter };

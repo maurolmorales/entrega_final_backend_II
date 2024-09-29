@@ -1,8 +1,9 @@
-import { hashSync, genSaltSync, compareSync } from "bcrypt";
-import { configGral } from "./config/configGral.js";
+import bcrypt from "bcrypt";
 import JWT from "jsonwebtoken";
+import { configGral } from "./config/configGral.js";
 
 export class Utils {
+
   static generaJWT = (usuario) => {
     return JWT.sign(usuario, configGral.SECRET, { expiresIn: 1800 });
   };
@@ -16,10 +17,11 @@ export class Utils {
   };
 
   static generateHash = (password) => {
-    return hashSync(password, genSaltSync(10));
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
   };
 
   static validatePassword = (pass, hash) => {
-    return compareSync(pass, hash);
+    return bcrypt.compareSync(pass, hash);
   };
+  
 }

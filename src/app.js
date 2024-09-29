@@ -11,7 +11,8 @@ import { routes } from "./routes/index.js";
 import methodOverride from "method-override";
 import passport from "passport";
 import { initPassport } from "./config/passport.config.js";
-import { Product_DAO } from "./managers/product-manager.js";
+import { Product_DAO } from "./dao/product_dao.js";
+import {ProductService} from "./services/product.service.js"
 
 /* --- Inicialización ---------------------------------------------- */
 const app = express();
@@ -28,10 +29,9 @@ app.use(express.static(path.join(__dirname, "../public/")));
 app.use(methodOverride("_method"));
 app.use(cookieParser());
 
+/*--------- 'passport ' ---------------------------------------------------------------------------*/
 initPassport();
 app.use(passport.initialize());
-
-// app.use(passport.session()) // solo si se usa express session
 
 /*---- handlebars ----------------------------------------------------- */
 app.engine("handlebars", engine({ defaultLayout: "main" }));
@@ -47,26 +47,26 @@ io.on("connection", async (socket) => {
   console.log("Un cliente se ha conectado");
 
   const updatedProducts = async () => {
-    const socketProducts = await Product_DAO.getAllProductsRealTime_manager();
+    const socketProducts = await ProductService.getAllProductsRealTime();
     socket.emit("allProducts", socketProducts);
   };
 
   updatedProducts();
 
   socket.on("nuevoProducto", async (data) => {
-    await Product_DAO.createProduct_manager(data);
+    await ProductService.createProduct(data);
     updatedProducts();
   });
 
   socket.on("deleteProduct", async (data) => {
-    await Product_DAO.deleteOneProduct_manager(data);
+    await ProductService.deleteOneProduct(data);
     updatedProducts();
   });
 });
 
 /*------ Rutas ---------------------------------------------------------- */
 app.use("/", routes);
-//(req, res)=>{res.redirect('/login')}
+
 
 /*----- Middleware de manejo de errores ---------------------------------- */
 app.use((err, req, res, next) => {

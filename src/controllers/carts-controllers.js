@@ -1,8 +1,8 @@
-import { Cart_DAO } from "../managers/cart-manager.js";
+import { CartService } from "../services/cart.service.js";
 
 const getAllCarts_controller = async (req, res) => {
   try {
-    const carts = await Cart_DAO.getAllCarts_manager();
+    const carts = await CartService.getAllCarts();
     if (!carts) {
       res
         .status(404)
@@ -17,7 +17,7 @@ const getAllCarts_controller = async (req, res) => {
 
 const getOneCart_controller = async (req, res) => {
   try {
-    const cart = await Cart_DAO.getOneCart_manager(req.params.cid);
+    const cart = await CartService.getOneCart(req.params.cid);
     if (!cart) {
       res
         .status(404)
@@ -33,9 +33,9 @@ const getOneCart_controller = async (req, res) => {
 const addProdToCart_controller = async (req, res) => {
   try {
     // Verificar si existe un carrito con estado "open" para el usuario
-    let cart = await Cart_DAO.addProdToCart_manager(req.params.pid);
+    let cart = await CartService.addProdToCart(req.params.pid);
     if (!cart) {
-      await Cart_DAO.res
+      await CartService.res
         .status(404)
         .json({ error: "Lista de Carritos no encontrada" });
     }
@@ -50,7 +50,7 @@ const addProdToCart_controller = async (req, res) => {
 
 const closeCart_controller = async (req, res) => {
   try {
-    await Cart_DAO.closeCart_manager(req.params.cid);
+    await CartService.closeCart(req.params.cid);
     res.status(200).redirect("/carts");
   } catch (error) {
     res.status(500).json({ error: "Error al cerrar el carrito" });
@@ -120,7 +120,7 @@ const createCart_controller = async (req, res) => {
         .json({ error: "Category no válida o inexistente" });
     }
 
-    const savedCart = await Cart_DAO.createCart_manager(cartBody);
+    const savedCart = await CartService.createCart(cartBody);
     return res.status(201).json(savedCart);
   } catch (error) {
     return res.status(500).json({ error: "Error al crear el carrito" });
@@ -129,7 +129,7 @@ const createCart_controller = async (req, res) => {
 
 const deleteOneCart_controller = async (req, res) => {
   try {
-    const cart = await Cart_DAO.deleteOneCart_manager(req.params.pid);
+    const cart = await CartService.deleteOneCart(req.params.pid);
     if (cart) {
       res.status(200).json({ message: "Cart Eliminado" });
     } else {
@@ -145,7 +145,7 @@ const emptyCart_controller = async (req, res) => {
     const { cid } = req.params;
 
     // Llama al manager para eliminar el producto
-    const updatedCart = await Cart_DAO.emptyCart_manager(cid);
+    const updatedCart = await CartService.emptyCart(cid);
 
     if (!updatedCart) {
       return res
@@ -164,7 +164,7 @@ const emptyCart_controller = async (req, res) => {
 const updateOneCart_controller = async (req, res) => {
   try {
     const cartBody = req.body;
-    const cart = await Cart_DAO.updateOneCart_manager(req.params.pid, cartBody);
+    const cart = await CartService.updateOneCart(req.params.pid, cartBody);
     if (cart) {
       return res
         .status(200)
@@ -182,7 +182,7 @@ const delProdToCart_controller = async (req, res) => {
     const { cid, pid } = req.params;
 
     // Llama al manager para eliminar el producto
-    const updatedCart = await Cart_DAO.delProdToCart_manager(cid, pid);
+    const updatedCart = await CartService.delProdToCart(cid, pid);
 
     if (!updatedCart) {
       return res
