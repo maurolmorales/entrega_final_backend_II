@@ -1,11 +1,12 @@
 import { Router } from "express";
 import passport from "passport";
-import JWT from "jsonwebtoken";
+import passportJWS from "passport-jwt";
 import { configGral } from "../config/configGral.js";
+import { Utils } from "../utils.js";
 import {
   addUser_controller,
   loginUser_controller,
-  getAllUsers,
+  logoutUser_controller,
 } from "../controllers/users.controllers.js";
 const userRouter = Router();
 
@@ -16,47 +17,82 @@ const userRouter = Router();
 // })
 
 //registro
-userRouter.post( "/registro",
+userRouter.post(
+  "/registro",
   passport.authenticate("registro", {
     session: false,
-    failureRedirect: "/api/sessions/error",
+    failureRedirect: "/login",
+    failureMessage: true,
   }),
-  addUser_controller
+  (req, res) => {
+    try {
+      const userFound = req.user;
+      if (!userFound) {
+        return res.status(404).json({ error: "Error al registrar el usuario" });
+      }
+      // Genera el JWT con el ID y rol del usuario
+      let token = Utils.generaJWT({ id: userFound._id, role: userFound.role });
+
+      res.cookie("CoderCookie", token);
+      res.setHeader("Content-Type", "application/json");
+      return res.status(201).json({ message: "Registro exitoso", token });
+    } catch (error) {
+      console.log("error: ", error.message);
+      return res.status(500).json({ error: "Error al guardar el usuario" });
+    }
+  }
 );
 
 //login
-userRouter.post( "/login",
+userRouter.post(
+  "/login",
   passport.authenticate("login", {
     session: false,
-    failureRedirect: "/api/sessions/error",
+    failureRedirect: "/login",
+    failureMessage: true,
   }),
-  loginUser_controller
+  (req, res) => {
+    try {
+      console.log("paso");
+      // req.session.usuario=req.user
+      let token = Utils.generaJWT(req.user);
+      res.cookie("CoderCookie", token);
+      res.setHeader("Content-Type", "application/json");
+      return res.status(200).json({
+        message: "Login exitoso",
+        usuarioLogueado: req.user,
+        token,
+      });
+    } catch (error) {
+      console.log("Errorrrr", error.message);
+      throw new Error("Errorrrr");
+    }
+  }
 );
 
 //current
-userRouter.get( "/current",
-  passport.authenticate("current", { session: false }),
+userRouter.get(
+  "/current",
+  passport.authenticate("current", {
+    secretOrKey: configGral.SECRET,
+    jwtFromRequest: new passportJWS.ExtractJwt.fromExtractors([Utils.buscarToken]),
+    session: false,
+    failureRedirect: "/login",
+    failureMessage: true,
+    // jwtFromRequest: new passportJWT.ExtractJwt.fromUrlQueryParameter("token")
+  }),
   (req, res) => {
-    res.status(200).json({ user: req.user });
+    try {
+      //generaJWT(req.user)
+      res.setHeader("Content-Type", "application/json");
+      res.status(200).json({ user: req.user });
+    } catch (error) {
+      console.log("error: ", error.message);
+    }
   }
-  // falta método controller
 );
 
 // Logout
-userRouter.get("/logout", (req, res) => {
-  let { web } = req.query;
-
-  // Eliminar la cookie jwt_token
-  res.clearCookie("jwt_token", { httpOnly: true });
-
-  if (web) {
-    return res.redirect("/login");
-  }
-  res.setHeader("Content-Type", "application/json");
-  return res.status(200).json({ payload: "Logout exitoso" });
-});
-
-// getAllUser /all
-userRouter.get("/all", getAllUsers );
+userRouter.get("/logout", logoutUser_controller);
 
 export { userRouter };

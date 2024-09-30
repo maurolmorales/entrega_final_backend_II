@@ -15,7 +15,9 @@ const addUser_controller = async (req, res) => {
       return res.status(404).json({ error: "Error al registrar el usuario" });
     }
     // Genera el JWT con el ID y rol del usuario
-    const token = Utils.generaJWT({ id: userFound._id, role: userFound.role }); 
+    let token = Utils.generaJWT({ id: userFound._id, role: userFound.role }); 
+
+    res.cookie("CoderCookie", token)
     res.setHeader("Content-Type", "application/json");
     return res.status(201).json({ message: "Registro exitoso", token });
   } catch (error) {
@@ -24,36 +26,24 @@ const addUser_controller = async (req, res) => {
   }
 };
 
-const loginUserJWT_controller = async (req, res) => {
-  const user = req.user;
-  if (!user) {
-    res.setHeader("Content-Type", "application/json");
-    return res
-      .status(400)
-      .send({ status: "error", error: "Invalid Credentials" });
-  }
-  const token = jwt.sign({ id: user._id }, process.env.SECRET, {
-    expiresIn: "1h",
-  });
-  res.cookie("jwt_token", token, { httpOnly: true });
-  return res.status(200).json({ message: "Login exitoso", token });
-};
-
 const loginUser_controller = async (req, res) => {
   const { email, password } = req.body;
   console.log("email: ", email, "pass: ", password);
   try {
-    const user = await User_Mongo_DAO.getUser_manager({ email });
+    const user = await UsersService.getUserByEmail({ email });
+
     if (!user) {
       return res.status(400).json({ error: "Usuario No Encontrado" });
     }
+
     if (!Utils.validatePassword(password, user.password)) {
       return res.status(400).json({ error: "Credenciales inválidas" });
     }
 
     // genera el jwt con el id y rol del usuario
-    const token = Utils.generaJWT({ id: user._id, role: user.role });
-    res.cookie("jwt_token", token, { httpOnly: true }); // Guardar el JWT en una cookie
+    let token = Utils.generaJWT({ id: user._id, role: user.role });
+
+    res.cookie("CoderCookie", token, { httpOnly: true }); // Guardar el JWT en una cookie
     console.log("Login Exitoso");
     res.setHeader("Content-Type", "application/json");
     return res.status(200).json({ message: "Login exitoso", token });
@@ -62,22 +52,15 @@ const loginUser_controller = async (req, res) => {
   }
 };
 
-const getAllUsers = async (req, res) => {
-  try {
-    let usuarios = await UsersService.getAllUsers();
-    return res.status(200).json({ usuarios });
-  } catch (error) {
-    return res.status(500).json({
-      error: "error inesperado",
-      detalle: error.message,
-    });
-  }
+const logoutUser_controller = (req, res) => {
+  res.clearCookie("CoderCookie"); // Eliminar la cookie del cliente
+  return res.status(200).json({ status: "success", message: "Sesión cerrada correctamente" });
 };
+
 
 export {
   errorPassport_controller,
   addUser_controller,
   loginUser_controller,
-  loginUserJWT_controller,
-  getAllUsers,
+  logoutUser_controller
 };

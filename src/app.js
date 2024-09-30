@@ -33,13 +33,12 @@ app.use(cookieParser());
 initPassport();
 app.use(passport.initialize());
 
+
 /*---- handlebars ----------------------------------------------------- */
 app.engine("handlebars", engine({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
-//app.set("views", path.join(__dirname, "../views"));
-app.set("views", "./src/views");
-console.log('asd', __dirname)
-
+app.set("views", path.join(__dirname, "../views"));
+//app.set("views", "./src/views");
 
 
 /*---- socket conexión -------------------------------------------------- */
@@ -71,7 +70,7 @@ app.use("/", routes);
 /*----- Middleware de manejo de errores ---------------------------------- */
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send("Something broke!");
+  res.status(500).json({ message: "Internal Server Error", error:err.message });
 });
 
 /*----------------------------------------------------------------------- */

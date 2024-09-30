@@ -3,7 +3,7 @@ import { cartsRouter } from "./carts.router.js";
 import { productsRouter } from "./products.router.js";
 import { userRouter } from "./users.router.js";
 import { routerView } from "./view.router.js";
-//import auth from "../middlewares/auth.js";
+import { Auth } from "../middlewares/auth.js";
 const routes = Router();
 
 routes.use("/api/carts", cartsRouter);

@@ -57,8 +57,8 @@ export class Cart_DAO {
   };
 
   static createCart = async (data) => {
-    const cart = new cartSchema.Cart(data);
-    return await cart.save();
+    //const cart = new cartSchema.Cart(data);
+    return await cartSchema.create(data);
   };
 
   static delProdToCart = async (cid, pid) => {

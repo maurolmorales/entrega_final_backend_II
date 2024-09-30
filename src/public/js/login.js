@@ -13,9 +13,10 @@ document
 
     try {
       const response = await fetch("/api/sessions/login", {
+      //const response = await fetch("/api/sessions/current", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(data),
       });

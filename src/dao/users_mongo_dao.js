@@ -2,7 +2,7 @@ import userSchema from "./models/user.model.js";
 
 export class User_Mongo_DAO {
 
-  static getUser = async (filtro = {}) => {
+  static getUser = async (filtro =  {}) => {
     return await userSchema.findOne(filtro).lean();
   };
   
