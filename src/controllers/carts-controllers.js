@@ -1,4 +1,6 @@
 import { CartService } from "../services/cart.service.js";
+import { ProductService } from "../services/product.service.js";
+import { TicketService } from "../services/ticket.service.js";
 
 const getAllCarts_controller = async (req, res) => {
   try {
@@ -30,17 +32,17 @@ const getOneCart_controller = async (req, res) => {
   }
 };
 
-const addProdToCart_controller = async (req, res) => {
+const addProdToCart_controller = async (productId, cartId, req, res) => {
   try {
-    // Verificar si existe un carrito con estado "open" para el usuario
-    let cart = await CartService.addProdToCart(req.params.pid);
+    let cart = await CartService.addProdToCart(productId, cartId);
     if (!cart) {
       await CartService.res
         .status(404)
         .json({ error: "Lista de Carritos no encontrada" });
     }
-    res.status(201).redirect("/carts");
-    //.render("carts", cart);
+    res.status(201)
+    .json({ message: "product added to cart successfully" })
+    //.redirect("/carts");
   } catch (error) {
     res
       .status(500)
@@ -198,6 +200,83 @@ const delProdToCart_controller = async (req, res) => {
   }
 };
 
+const completePurchase_controller = async (req, res) => {
+  /*
+  1- recorrer el products del cart, y ver si cada producto existe en DB.
+  2- además ver si hay stock, y actualizar el stock (descuento la quantity que compro).
+  3- Mientras, marco que item de product tiene stock y cual no.
+  4- separo lo que tiene stock (para generar ticket)
+  5- borro lo que tiene stock de cart.products (queda lo que no tenía stock)
+  6- con lo que separe (que tiene stock), calculo total, y grabo el ticket
+*/
+  try {
+    let { cid } = req.params;
+    let cart = await CartService.getOneCart(cid);
+
+    if (!cart) {
+      res.setHeader("Content-Type", "application/json");
+      return res.status(400).json({ error: `No existe cart ${cid}` });
+    }
+
+    for (const p of cart.products) {
+      let id = p.product._id.toString(); // Acceder directamente al producto
+      let productFound = await ProductService.getOneProduct(id);
+
+      if (productFound && productFound.stock >= p.quantity) {
+        p.tieneStock = true; // Agregar la propiedad tieneStock
+        
+        // actualizar el inventario del producto
+        productFound.stock = productFound.stock - p.quantity;
+        await ProductService.updateOneProduct(p.product._id, productFound);
+      } else {
+        p.tieneStock = false;
+        // productFound.products.tieneStock = false; // O marcarlo como false si no tiene stock suficiente
+      }
+    }
+
+    // Eliminar los productos que fueron comprados del carrito
+    //cart.products = cart.products.filter((p) => !p.tieneStock);
+    
+    const conStock = cart.products.filter((p) => p.tieneStock == true);
+    cart.products = cart.products.filter((p) => p.tieneStock == undefined);
+    
+    if (conStock.length === 0) {
+      res.setHeader("Content-Type", "application/json");
+      return res
+        .status(400)
+        .json({ error: `No hay ítems en condiciones de ser comprados...!!!` });
+    }
+
+    let amount = conStock.reduce(
+      (acum, item) => (acum += item.quantity * item.product.price),
+      0
+    );
+
+    let code = Date.now();
+    let fecha = new Date();
+    let purchaser = req.user.email;
+    // console.log(nroComp, fecha, email_comprador, total);
+    const ticket = await TicketService.createTicket({
+      code,
+      fecha,
+      purchaser,
+      amount,
+      detalle: conStock,
+    });
+
+    // actualizar cart... como quede (con algún ítem sin stock o vacío)
+    await CartService.updateOneCart({ _id: cid }, cart);
+
+    res.setHeader("Content-Type", "application/json");
+    return res.status(200).json({ ticket });
+  } catch (error) {
+    console.log("error: ", error.message);
+    return res
+      .status(500)
+      .json({ error: "Error al completar la compra", detalle: error.message });
+  }
+};
+
 export {
   getAllCarts_controller,
   getOneCart_controller,
@@ -208,4 +287,5 @@ export {
   emptyCart_controller,
   updateOneCart_controller,
   delProdToCart_controller,
+  completePurchase_controller,
 };

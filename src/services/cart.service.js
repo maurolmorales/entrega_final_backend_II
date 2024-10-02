@@ -6,11 +6,12 @@ export class CartService {
   };
 
   static getOneCart = async (id) => {
+    // getBy({ _id: id });
     return await Cart_DAO.getOne(id);
   };
 
-  static addProdToCart = async (pid) => {
-    return await Cart_DAO.addProdToCart(pid);
+  static addProdToCart = async (pid, cid) => {
+    return await Cart_DAO.addProdToCart(pid, cid);
   };
 
   static closeCart = async (cid) => {
@@ -30,7 +31,7 @@ export class CartService {
   };
 
   static updateOneCart = async (id) => {
-    return await Cart_DAO.updateOne(id);
+    return await Cart_DAO.update(id);
   };
 
   static deleteOneCart = async (id) => {

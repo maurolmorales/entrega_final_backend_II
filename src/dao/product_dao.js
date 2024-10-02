@@ -1,6 +1,7 @@
 import productSchema from "./models/product-model.js";
 
 export class Product_DAO {
+
   static getAll = async (filter, options) => {
     try {
       return await productSchema.paginate(filter, options);;
@@ -11,9 +12,9 @@ export class Product_DAO {
 
   static getOne = async (id) => {
     try {
-      const product = await productSchema.findById(id);
+      const product = await productSchema.findById({_id:id});
       if (!product) {
-        throw new Error("Product not found");
+        throw new Error("Product not found"); 
       }
       return product;
     } catch (error) {
@@ -66,4 +67,5 @@ export class Product_DAO {
       throw new Error("Error al obtener los productos con paginación");
     }
   };
+  
 }

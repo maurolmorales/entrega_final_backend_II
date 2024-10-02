@@ -13,16 +13,18 @@ export class Cart_DAO {
   };
 
   static getOne = async (id) => {
+    //getBy(filtro = {}
     return await cartSchema.findById(id).populate("products.product");
   };
 
-  static addProdToCart = async (pid) => {
+  static addProdToCart = async (pid, cid) => {
     // Buscar un carrito con estado "open"
     try {
-      let cart = await cartSchema.findOne({ status: "open" });
+      let cart = await cartSchema.findOne({ _id: cid });
+      // console.log('cart: ', cart)
       // Si no existe un carrito "open", crear uno nuevo
       if (!cart) {
-        cart = new cartSchema.Cart({ products: [], status: "open" });
+        cart = new cartSchema.cartSchema({ products: [], status: "open" });
       }
 
       // Verificar si el producto ya está en el carrito
@@ -32,13 +34,19 @@ export class Cart_DAO {
 
       // Agregar el producto al carrito
       if (!productExists) {
-        cart.products.push({ product: pid });
+        cart.products.push({ product: pid, quantity: 1 });
+      } else {
+        cart.products.forEach((p) => {
+          if (p.product.toString() === pid) { p.quantity += 1 }
+        });
       }
-
+      console.log('cart: ', cart)
+      await cart.save();
+      return cart; 
       // Guardar el carrito actualizado
-      return await cart.save();
       // return cart;
     } catch (error) {
+      console.log('error', error.message)
       throw new Error("Error al buscar o crear un carrito");
     }
   };
@@ -57,7 +65,7 @@ export class Cart_DAO {
   };
 
   static createCart = async (data) => {
-    //const cart = new cartSchema.Cart(data);
+    // create({ products: [] });
     return await cartSchema.create(data);
   };
 
@@ -92,9 +100,13 @@ export class Cart_DAO {
     );
   };
 
-  static updateOne = async (id) => {
-    return await cartSchema.updateOneCart(id);
-  };
+  // static updateOne = async (id) => {
+  //   return await cartSchema.updateOne(id);
+  // };
+
+  static async update(filtro = {}, cart) {
+    return await cartSchema.updateOne(filtro, cart);
+  }
 
   static deleteOne = async (id) => {
     return await cartSchema.findByIdAndDelete(id);

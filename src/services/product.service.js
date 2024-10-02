@@ -15,7 +15,7 @@ export class ProductService {
   };
 
   static updateOneProduct = async (id, productData) => {
-    return await Product_DAO.updateOneProduct(id, productData);
+    return await Product_DAO.updateOne(id, productData);
   };
 
   static deleteOneProduct = async (id) => {
