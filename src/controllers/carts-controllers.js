@@ -1,6 +1,7 @@
 import { CartService } from "../services/cart.service.js";
 import { ProductService } from "../services/product.service.js";
 import { TicketService } from "../services/ticket.service.js";
+import { Ticket_DTO } from "../dao/dto/ticket_dto.js";
 
 const getAllCarts_controller = async (req, res) => {
   try {
@@ -226,7 +227,7 @@ const completePurchase_controller = async (req, res) => {
         p.tieneStock = true; // Agregar la propiedad tieneStock
         
         // actualizar el inventario del producto
-        productFound.stock = productFound.stock - p.quantity;
+        productFound.stock -= p.quantity;
         await ProductService.updateOneProduct(p.product._id, productFound);
       } else {
         p.tieneStock = false;
@@ -238,7 +239,7 @@ const completePurchase_controller = async (req, res) => {
     //cart.products = cart.products.filter((p) => !p.tieneStock);
     
     const conStock = cart.products.filter((p) => p.tieneStock == true);
-    cart.products = cart.products.filter((p) => p.tieneStock == undefined);
+    cart.products = cart.products.filter((p) => p.tieneStock == false);
     
     if (conStock.length === 0) {
       res.setHeader("Content-Type", "application/json");
@@ -253,24 +254,27 @@ const completePurchase_controller = async (req, res) => {
     );
 
     let code = Date.now();
-    let fecha = new Date();
+    //let fecha = new Date();
     let purchaser = req.user.email;
     // console.log(nroComp, fecha, email_comprador, total);
-    const ticket = await TicketService.createTicket({
+    let ticketDto = new Ticket_DTO({
       code,
-      fecha,
+      //fecha,
       purchaser,
       amount,
-      detalle: conStock,
-    });
-
+      details: conStock});
+      //let ticket = "prueba"
+      console.log('ticketDto: ', ticketDto)
+    const ticket = await TicketService.createTicket(ticketDto);
+    //console.log('CartPurchase: ', cart)
     // actualizar cart... como quede (con algún ítem sin stock o vacío)
-    await CartService.updateOneCart({ _id: cid }, cart);
-
+    //cart.status = "close";
+   // await CartService.updateOneCart({ _id: cid }, cart);
+    
     res.setHeader("Content-Type", "application/json");
     return res.status(200).json({ ticket });
   } catch (error) {
-    console.log("error: ", error.message);
+    console.error("error: ", error.message);
     return res
       .status(500)
       .json({ error: "Error al completar la compra", detalle: error.message });

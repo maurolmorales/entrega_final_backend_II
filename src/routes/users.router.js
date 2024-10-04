@@ -3,6 +3,7 @@ import passport from "passport";
 import passportJWS from "passport-jwt";
 import { configGral } from "../config/configGral.js";
 import { Utils } from "../utils.js";
+import {Usuarios_DTO} from "../dao/dto/user_dto.js"
 import {
   addUser_controller,
   loginUser_controller,
@@ -83,9 +84,11 @@ userRouter.get(
   }),
   (req, res) => {
     try {
-      //generaJWT(req.user)
+      const userFiltred = new Usuarios_DTO(req.user)
+      console.log('userFiltred:', userFiltred)
       res.setHeader("Content-Type", "application/json");
-      res.status(200).json({ user: req.user });
+      //res.status(200).json({ user: req.user });
+      res.status(200).json({ user: userFiltred});
     } catch (error) {
       console.log("error: ", error.message);
     }

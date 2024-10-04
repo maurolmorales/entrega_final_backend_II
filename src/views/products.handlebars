@@ -29,3 +29,26 @@
     {{/if}}
   </nav>
 </div>
+
+
+<script>
+  
+  async function agregarAlCarrito(productId) {
+    try {
+      const response = await fetch(`/api/carts/${productId}`, {
+        method: "POST" });
+
+      if (response.ok) {
+        // Redirigir a la página de carritos después de la respuesta exitosa
+        window.location.href = "/carts";
+      } else if (response.status === 401) {
+        // Si no está autorizado, redirigir a login
+        window.location.href = "/login";
+      } else {
+        console.error("Error al añadir el producto al carrito");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
+  }
+</script>

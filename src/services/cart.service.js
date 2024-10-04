@@ -30,8 +30,8 @@ export class CartService {
     return await Cart_DAO.emptyCart(cid)
   };
 
-  static updateOneCart = async (id) => {
-    return await Cart_DAO.update(id);
+  static updateOneCart = async (id, cart) => {
+    return await Cart_DAO.update(id, cart);
   };
 
   static deleteOneCart = async (id) => {

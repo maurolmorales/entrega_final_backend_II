@@ -19,6 +19,26 @@ export class Auth {
     return token;
   };
   
+   // Middleware de autorización basado en roles
+static authorize = (roles) => {
+  return (req, res, next) => {
+    // El usuario ya debe estar autenticado y su información en req.user
+    if (!req.user) {
+      return res.status(401).json({ message: "No autorizado" });
+    }
+
+    const { role } = req.user; // Extraer el rol del usuario desde el token
+
+    // Verificar si el rol del usuario está dentro de los roles permitidos
+    if (!roles.includes(role)) {
+      return res.status(403).json({ message: "Acceso denegado" });
+    }
+
+    next(); // Si pasa, continuar con la siguiente función middleware
+  };
+};
+
+
   // middleware para autenticar api
   static auth = async (req, res, next) => {
     try {

@@ -1,3 +1,12 @@
-<form action="/api/carts/{{param}}" method="POST" class="formButton buttonGray" >
+{{!-- <form id="addToCartForm" action="/api/carts/{{param}}" method="POST"
+ class="formButton buttonGray">
   <input type="submit" value="Enviar al carrito" alt="enviar al carrito">
-</form>
+</form> --}}
+
+<!-- Botón en la plantilla -->
+  <button class="formButton buttonGray" onclick="agregarAlCarrito('{{param}}')">
+    Enviar al carrito
+  </button>
+
+
+

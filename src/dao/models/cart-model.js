@@ -13,7 +13,7 @@ const cartSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   status: {
     type: String,
-    enum: ["open", "complete", "canceled"],
+    enum: ["open", "completed", "canceled"],
     default: "open",
   },
 });

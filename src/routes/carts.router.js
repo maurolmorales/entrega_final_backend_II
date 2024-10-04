@@ -1,5 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
+import { Auth } from "../middlewares/auth.js";
 // import { Utils } from "../utils.js";
 
 const cartsRouter = Router();
@@ -11,20 +12,20 @@ import {
   closeCart_controller,
   delProdToCart_controller,
   emptyCart_controller,
+  updateOneCart_controller,
   completePurchase_controller,
 } from "../controllers/carts-controllers.js";
 
-// getAllCarts
+// "/", getAllCarts
 cartsRouter.get(
   "/",
   passport.authenticate("current", {
     session: false,
-    failureRedirect: "/login",
   }),
   getAllCarts_controller
 );
 
-// getOneCart
+// "/:cid" getOneCart
 cartsRouter.get(
   "/:cid",
   passport.authenticate("current", {
@@ -34,21 +35,26 @@ cartsRouter.get(
   getOneCart_controller
 );
 
-// addProdToCart
+//  "/:pid" addProdToCart
 cartsRouter.post(
   "/:pid",
   passport.authenticate("current", {
     session: false,
-    failureRedirect: "/login",
   }),
-  async (req, res) => { 
+  Auth.authorize("user"),
+  async (req, res) => {
     const productId = req.params.pid;
-    const cartId = req.user.cart
-    addProdToCart_controller(productId, cartId, req, res)
+    const cartId = req.user.cart;
+    try {
+      addProdToCart_controller(productId, cartId, req, res);
+    } catch (error) {
+      console.log("Error en la ruta:", error.message);
+      return res.status(500).json({ error: "Error en la operación" });
+    }
   }
 );
 
-// closeCart
+// "/:cid"  closeCart
 cartsRouter.put(
   "/:cid",
   passport.authenticate("current", {
@@ -58,7 +64,7 @@ cartsRouter.put(
   closeCart_controller
 );
 
-// delProdToCart
+// "/:cid/products/:pid", delProdToCart
 cartsRouter.delete(
   "/:cid/products/:pid",
   passport.authenticate("current", {
@@ -68,7 +74,7 @@ cartsRouter.delete(
   delProdToCart_controller
 );
 
-// emptyCart
+//  "/:cid",  emptyCart
 cartsRouter.delete(
   "/:cid",
   passport.authenticate("current", {
@@ -78,12 +84,21 @@ cartsRouter.delete(
   emptyCart_controller
 );
 
-// completePurchase
+
+cartsRouter.put(
+  "/:cid",
+  passport.authenticate("current", {
+    session: false,
+    failureRedirect: "/login",
+  }),
+  updateOneCart_controller
+)
+
+// "/:cid/purchase", completePurchase
 cartsRouter.post(
   "/:cid/purchase",
   passport.authenticate("current", {
     session: false,
-    failureRedirect: "/login",
   }),
   completePurchase_controller
 );

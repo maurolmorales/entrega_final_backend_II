@@ -8,9 +8,18 @@ import { configGral } from "./configGral.js";
 
 const buscarToken = (req) => {
   let token = null;
-  if (req.cookies.CoderCookie) {
+
+  if (req.cookies && req.cookies.CoderCookie) {
     token = req.cookies.CoderCookie;
   }
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer ")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+
   return token;
 };
 
@@ -72,7 +81,7 @@ const initPassport = () => {
             return done(null, false);
           }
 
-          let validar = Utils.validatePassword(password, usuario.password)
+          let validar = Utils.validatePassword(password, usuario.password);
 
           if (!validar) {
             console.log("contraseña inválida");
@@ -83,7 +92,7 @@ const initPassport = () => {
           delete usuario.password;
           return done(null, usuario);
         } catch (error) {
-          console.log('done', error)
+          console.log("done", error);
           return done(error, false);
         }
       }
@@ -91,23 +100,24 @@ const initPassport = () => {
   );
 
   //current
-    passport.use(
-      "current",
-      new passportJWT.Strategy(
-        {
-          secretOrKey: configGral.SECRET,
-          jwtFromRequest: new passportJWT.ExtractJwt.fromExtractors([ buscarToken ]),
-        },
-        async (contenidoToken, done) => {
-          try {
-            //req.user=Utils.validaJWT(contenidoToken, config.SECRET)
-            return done(null, contenidoToken);
-          } catch (error) {
-            return done(error);
-          }
+  passport.use(
+    "current",
+    new passportJWT.Strategy(
+      {
+        secretOrKey: configGral.SECRET,
+        jwtFromRequest: new passportJWT.ExtractJwt.fromExtractors([
+          buscarToken,
+        ]),
+      },
+      async (contenidoToken, done) => {
+        try {
+          return done(null, contenidoToken);
+        } catch (error) {
+          return done(error);
         }
-      )
-    );
-  };
+      }
+    )
+  );
+};
 
-export { initPassport };
+export { initPassport, buscarToken };
