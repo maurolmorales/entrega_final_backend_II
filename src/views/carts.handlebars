@@ -1,30 +1,28 @@
 {{>header}}
 
-<div class="container">
-  {{#each data}}
-    <div>
-      <ul>
-      {{#each products}}
-        <li>{{product.title}} {{data.quantity}} {{> buttonDelProdCart pid=product._id cid=../_id}}</li>
-      {{/each}}
-      </ul>
-      <p>ID del Carrito: {{this._id}}</p>
-      <p><strong>Date: </strong> {{date}}</p>
-      <p><strong>Status: <span class="cart-{{status}}"> {{status}}</span></strong></p>
-      <span class="commandButtons">
-        {{>buttonGoToCart cid=this._id}}
-        {{>buttonCloseCart cid=this._id}}
-        {{>buttonEmptyCart cid=this._id}}      
-      </span>
-    </div>
-  {{/each}}
+<div class="container cartContainer">
+  <div>
+    <ul>
+    {{#each data.products}}
+      <li>{{product.title}} $:{{product.price}} x {{quantity}} {{> buttonDelProdCart pid=product._id cid=../_id}}</li>
+    {{/each}}
+    </ul>
+    <p>ID del Carrito: {{data._id}}</p>
+    <p><strong>Date: </strong> {{data.date}}</p>
+    <p><strong>Status: <span class="cart-{{status}}"> {{data.status}}</span></strong></p>
+    <span class="commandButtons">
+      {{>buttonGoToCart cid=this._id}}
+      {{>buttonCloseCart cid=data._id}}
+      {{>buttonEmptyCart cid=this._id}}      
+    </span>
+  </div>
 </div>
 
 
 <script>  
-  async function agregarAlCarrito(productId) {
+  async function completePurchase(cid) {
     try {
-      const response = await fetch(`/api/carts/${productId}`, {
+      const response = await fetch(`/api/carts/${cid}/purchase`, {
         method: "POST" });
 
       if (response.ok) {

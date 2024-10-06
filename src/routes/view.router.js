@@ -1,9 +1,8 @@
 import { Router } from "express";
 import passport from "passport";
-import { Auth } from "../middlewares/auth.js";
-import { Utils } from "../utils.js";
 import { configGral } from "../config/configGral.js";
 import { buscarToken } from "../config/passport.config.js";
+import { Auth } from "../middlewares/auth.js";
 const routerView = Router();
 
 /// realtimeproducts
@@ -12,12 +11,13 @@ routerView.get(
   passport.authenticate("current", {
     session: false,
     failureRedirect: "/login",
-  }),    
+  }),
+  Auth.authorize("admin"),
   async (req, res) => {
     try {
       const token = buscarToken(req);
       if (!token) {
-        console.log("No se encontró token");
+        console.log("token not found");
         return res.redirect("/login");
       }
       res.render("realTimeProducts", {
@@ -39,17 +39,16 @@ routerView.get(
   }),
   async (req, res) => {
     try {
-      console.log('prueba', req.user)
       const token = buscarToken(req);
       if (!token) {
-        console.log("No se encontró token");
+        console.log("token not found");
         return res.redirect("/login");
       }
       const baseurl = configGral.BASE_URL;
-      const queryParams = new URLSearchParams(req.query).toString(); // para pasar los parámetros de query
+      const queryParams = new URLSearchParams(req.query).toString();
       const response = await fetch(`${baseurl}/api/products?${queryParams}`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Pasar el JWT en el header
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -72,14 +71,14 @@ routerView.get(
     try {
       const token = buscarToken(req);
       if (!token) {
-        console.log("No se encontró token");
+        console.log("token not found");
         return res.redirect("/login");
       }
       const baseurl = configGral.BASE_URL;
       const pid = req.params.pid;
       const response = await fetch(baseurl + "/api/products/" + pid, {
         headers: {
-          Authorization: `Bearer ${token}`, // Pasar el JWT en el header
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -102,13 +101,13 @@ routerView.get(
     try {
       const token = buscarToken(req);
       if (!token) {
-        console.log("No se encontró token");
+        console.log("token not found");
         return res.redirect("/login");
       }
       const baseurl = configGral.BASE_URL;
-      const response = await fetch(baseurl + "/api/carts", {
+      const response = await fetch(baseurl + "/api/carts/usercart", {
         headers: {
-          Authorization: `Bearer ${token}`, // Pasar el JWT en el header
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -136,7 +135,7 @@ routerView.get(
       const response = await fetch(baseurl + "/api/carts/" + cid, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Pasar el JWT en el header
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = await response.json();
@@ -162,8 +161,16 @@ routerView.get(
     session: false,
     failureRedirect: "/login",
   }),
-  (req, res) => {
-    res.render("index", { user: req.user });
+  async (req, res) => {
+    try {
+      const token = buscarToken(req);
+      if (!token) {
+        return res.redirect("/login");
+      }
+      res.status(404).render("index", { user: req.user });
+    } catch (error) {
+      res.status(500).json(error.message);
+    }
   }
 );
 
@@ -174,9 +181,19 @@ routerView.get(
     session: false,
     failureRedirect: "/login",
   }),
-  (req, res) => {
-    res.status(404).render("notFound", { user: req.user });
+  //Auth.authorize("user"),
+  async (req, res) => {
+    try {
+      const token = buscarToken(req);
+      if (!token) {
+        return res.redirect("/login");
+      }
+      res.status(404).render("notFound", { user: req.user });
+    } catch (error) {
+      res.status(500).json(error.message);
+    }
   }
+
 );
 
 export { routerView };

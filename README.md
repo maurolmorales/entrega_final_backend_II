@@ -25,3 +25,8 @@ Implementado con Socket.IO, permite ingresar un producto a la base de datos a tr
 - PUT carts/:cid Actualiza el status del carrito a "Completed"
 - DELETE carts/:cid/products/:pid Elimina el producto indicado por id del carrito
 - DELETE carts/:cid Elimina la totalidad de productos del carrito
+
+### Ruta User:
+- admin:
+  - User: adminCoder@coder.com
+  - Contraseña: adminCod3r123

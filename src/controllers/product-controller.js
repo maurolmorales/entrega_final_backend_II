@@ -6,19 +6,18 @@ const getAllProducts_controller = async (req, res) => {
     const options = {
       limit: parseInt(limit),
       page: parseInt(page),
-      sort: sort ? { price: sort == "asc" ? 1 : -1 } : {}, // ordena por precio acendente
-      lean: true, // para devolver objetos planos.
+      sort: sort ? { price: sort == "asc" ? 1 : -1 } : {}, 
+      lean: true,
     };
 
     const filter = query ? { category: query } : {};
 
     const products = await ProductService.getAllProducts(filter, options);
-    //const productsData = await JSON.parse(JSON.stringify(products));
 
     const paginationInfo = {
       pageTitle: "Lista de Productos",
       status: "success",
-      productsData: products.docs, // payload
+      productsData: products.docs, 
       totalPages: products.totalPages,
       currentPage: products.page,
       hasPrevPage: products.hasPrevPage,
@@ -57,7 +56,6 @@ const createProduct_controller = async (req, res) => {
   try {
     const prodBody = req.body;
 
-    // verifico los tipos de cada uno de los elementos:
     if (
       typeof prodBody.title !== "string" ||
       prodBody.title == null ||

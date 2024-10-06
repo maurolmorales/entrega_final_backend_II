@@ -5,7 +5,7 @@
 document
   .querySelector("#registerForm")
   .addEventListener("submit", async (event) => {
-    event.preventDefault(); // Evitar el envío normal del formulario
+    event.preventDefault(); 
     const formData = new FormData(event.target);
     const data = {
       first_name: formData.get("first_name"),

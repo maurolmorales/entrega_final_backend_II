@@ -309,6 +309,13 @@ header {
   flex-direction: row;
   justify-content: space-between;
 }
+.cartContainer div{
+  width: 60%;
+  li{
+    justify-content: space-between;
+    align-items: center;
+  }
+}
 
 .twoColumns {
   width: 100%;
@@ -428,6 +435,7 @@ input[type="search"] {
  .formButton{
   width: fit-content;
   min-height: fit-content;
+  
 }
 
 /* .buttonGray{
@@ -439,10 +447,9 @@ input[type="search"] {
 .commandButtons{
   width: 100%; 
   height: 3.5rem;
-  margin-top: 0.5rem; 
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-content: center;
 }
 
 .formUser{

@@ -1,11 +1,3 @@
-{{!-- <form
-  method="POST"
-  action="/api/carts/{{cid}}?_method=PUT"
-  class="formButton buttonGray"
->
-  <input type="submit" value="cerrar carrito" />
-</form> --}}
-
-<button class="formButton buttonGray" onclick="agregarAlCarrito('{{param}}')">
+<button class="formButton buttonGray" onclick="completePurchase('{{cid}}')">
   ejecutar compra
 </button>

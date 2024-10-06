@@ -1,7 +1,6 @@
 import { Product_DAO } from "../dao/product_dao.js";
 
 export class ProductService {
-
   static getAllProducts = async (filter, options) => {
     return await Product_DAO.getAll(filter, options);
   };
@@ -25,5 +24,4 @@ export class ProductService {
   static getAllProductsRealTime = async () => {
     return await Product_DAO.getAllProductsRealTime();
   };
-  
 }

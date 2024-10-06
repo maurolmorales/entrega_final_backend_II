@@ -11,38 +11,47 @@ import {
   deleteOneProduct_controller,
 } from "../controllers/product-controller.js";
 
-productsRouter.get("/", 
-  passport.authenticate("current", {
-    session: false,   
-  }),
-  
-  getAllProducts_controller);
-
-productsRouter.get("/:pid", 
+productsRouter.get(
+  "/",
   passport.authenticate("current", {
     session: false,
   }),
-  getOneProduct_controller);
+  getAllProducts_controller
+);
 
-productsRouter.post("/", 
+productsRouter.get(
+  "/:pid",
   passport.authenticate("current", {
     session: false,
   }),
-  Auth.authorize("admin"),
-  createProduct_controller);
+  getOneProduct_controller
+);
 
-productsRouter.patch("/:pid", 
+productsRouter.post(
+  "/",
   passport.authenticate("current", {
     session: false,
   }),
   Auth.authorize("admin"),
-  updateOneProduct_controller);
+  createProduct_controller
+);
 
-productsRouter.delete("/:pid", 
+productsRouter.patch(
+  "/:pid",
   passport.authenticate("current", {
     session: false,
   }),
   Auth.authorize("admin"),
-  deleteOneProduct_controller);
+  updateOneProduct_controller
+);
+
+productsRouter.delete(
+  "/:pid",
+  passport.authenticate("current", {
+    session: false,
+  }),
+  Auth.authorize("admin"),
+  deleteOneProduct_controller
+);
 
 export { productsRouter };

@@ -1,0 +1,17 @@
+[{
+  "_id": {
+    "$oid": "6701f9ce2739aef418fa9e5d"
+  },
+  "first_name": "Juan",
+  "last_name": "Perez",
+  "email": "admincoder@coder.com",
+  "password": "$2b$10$nOTtuFtNkZyN7c0yYDHvMeNqZ3zyIp9421g1YVMLA1kCjkq//hcTO",
+  "role": "admin",
+  "createdAt": {
+    "$date": "2024-10-06T02:45:34.791Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-06T02:45:34.791Z"
+  },
+  "__v": 0
+}]

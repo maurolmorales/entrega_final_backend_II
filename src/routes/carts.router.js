@@ -1,20 +1,8 @@
 import { Router } from "express";
 import passport from "passport";
 import { Auth } from "../middlewares/auth.js";
-// import { Utils } from "../utils.js";
-
+import { CartController } from "../controllers/carts-controllers.js";
 const cartsRouter = Router();
-
-import {
-  getAllCarts_controller,
-  getOneCart_controller,
-  addProdToCart_controller,
-  closeCart_controller,
-  delProdToCart_controller,
-  emptyCart_controller,
-  updateOneCart_controller,
-  completePurchase_controller,
-} from "../controllers/carts-controllers.js";
 
 // "/", getAllCarts
 cartsRouter.get(
@@ -22,7 +10,17 @@ cartsRouter.get(
   passport.authenticate("current", {
     session: false,
   }),
-  getAllCarts_controller
+  Auth.authorize("admin"),
+  CartController.getAllCarts
+);
+
+// "/", getCurrentCart
+cartsRouter.get(
+  "/usercart",
+  passport.authenticate("current", {
+    session: false,
+  }),
+  CartController.getCurrentCart
 );
 
 // "/:cid" getOneCart
@@ -32,7 +30,7 @@ cartsRouter.get(
     session: false,
     failureRedirect: "/login",
   }),
-  getOneCart_controller
+  CartController.getOneCart
 );
 
 //  "/:pid" addProdToCart
@@ -43,10 +41,11 @@ cartsRouter.post(
   }),
   Auth.authorize("user"),
   async (req, res) => {
-    const productId = req.params.pid;
-    const cartId = req.user.cart;
+    let pid = req.params.pid;
+    let cid = req.user.cart;
+    let userParam = req.user;
     try {
-      addProdToCart_controller(productId, cartId, req, res);
+      await CartController.addProdToCart(pid, cid, req, res, userParam);
     } catch (error) {
       console.log("Error en la ruta:", error.message);
       return res.status(500).json({ error: "Error en la operación" });
@@ -54,24 +53,25 @@ cartsRouter.post(
   }
 );
 
-// "/:cid"  closeCart
-cartsRouter.put(
-  "/:cid",
-  passport.authenticate("current", {
-    session: false,
-    failureRedirect: "/login",
-  }),
-  closeCart_controller
-);
-
-// "/:cid/products/:pid", delProdToCart
+// "/product/:pid", delProdToCart
 cartsRouter.delete(
-  "/:cid/products/:pid",
+  "/product/:pid",
   passport.authenticate("current", {
     session: false,
     failureRedirect: "/login",
   }),
-  delProdToCart_controller
+  Auth.authorize("user"),
+  async (req, res) => {
+    let pid = req.params.pid;
+    let cid = req.user.cart;
+    let userParam = req.user;
+    try {
+      await CartController.delProdToCart(pid, cid, req, res, userParam);
+    } catch (error) {
+      console.log("Error en la ruta:", error.message);
+      return res.status(500).json({ error: "Error en la operación" });
+    }
+  }
 );
 
 //  "/:cid",  emptyCart
@@ -81,18 +81,18 @@ cartsRouter.delete(
     session: false,
     failureRedirect: "/login",
   }),
-  emptyCart_controller
+  CartController.emptyCart
 );
 
-
+//   "/:cid", updateOneCarts
 cartsRouter.put(
   "/:cid",
   passport.authenticate("current", {
     session: false,
     failureRedirect: "/login",
   }),
-  updateOneCart_controller
-)
+  CartController.updateOneCart
+);
 
 // "/:cid/purchase", completePurchase
 cartsRouter.post(
@@ -100,7 +100,7 @@ cartsRouter.post(
   passport.authenticate("current", {
     session: false,
   }),
-  completePurchase_controller
+  CartController.completePurchase
 );
 
 export { cartsRouter };

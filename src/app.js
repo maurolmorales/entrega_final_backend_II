@@ -11,7 +11,6 @@ import { routes } from "./routes/index.js";
 import methodOverride from "method-override";
 import passport from "passport";
 import { initPassport } from "./config/passport.config.js";
-import { Product_DAO } from "./dao/product_dao.js";
 import {ProductService} from "./services/product.service.js"
 
 /* --- Inicialización ---------------------------------------------- */
@@ -38,7 +37,6 @@ app.use(passport.initialize());
 app.engine("handlebars", engine({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "../views"));
-//app.set("views", "./src/views");
 
 
 /*---- socket conexión -------------------------------------------------- */
@@ -63,6 +61,7 @@ io.on("connection", async (socket) => {
   });
 });
 
+
 /*------ Rutas ---------------------------------------------------------- */
 app.use("/", routes);
 
@@ -70,8 +69,11 @@ app.use("/", routes);
 /*----- Middleware de manejo de errores ---------------------------------- */
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: "Internal Server Error", error:err.message });
+  res.status(500)
+  .json({ message: "Internal Server Error", error:err.message })
+  .redirect("/");
 });
+
 
 /*----------------------------------------------------------------------- */
 export { httpServer };
