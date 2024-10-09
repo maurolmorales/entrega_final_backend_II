@@ -33,55 +33,41 @@ cartsRouter.get(
   CartController.getOneCart
 );
 
-//  "/:pid" addProdToCart
+//  "/:pid" addProdToCart cambiado a |||||| :cid/product/:pid ||||||
 cartsRouter.post(
-  "/:pid",
+  ["/:cid?/product/:pid", "/product/:pid"],
   passport.authenticate("current", {
     session: false,
   }),
   Auth.authorize("user"),
   async (req, res) => {
-    let pid = req.params.pid;
-    let cid = req.user.cart;
-    let userParam = req.user;
-    try {
-      await CartController.addProdToCart(pid, cid, req, res, userParam);
-    } catch (error) {
-      console.log("Error en la ruta:", error.message);
-      return res.status(500).json({ error: "Error en la operación" });
-    }
+    CartController.addProdToCart(req, res);
   }
 );
 
-// "/product/:pid", delProdToCart
+// "/:cid/product/:pid", delProdToCart
 cartsRouter.delete(
-  "/product/:pid",
+  ["/:cid?/product/:pid", "/product/:pid"],
   passport.authenticate("current", {
     session: false,
     failureRedirect: "/login",
   }),
   Auth.authorize("user"),
   async (req, res) => {
-    let pid = req.params.pid;
-    let cid = req.user.cart;
-    let userParam = req.user;
-    try {
-      await CartController.delProdToCart(pid, cid, req, res, userParam);
-    } catch (error) {
-      console.log("Error en la ruta:", error.message);
-      return res.status(500).json({ error: "Error en la operación" });
-    }
+    CartController.delProdToCart(req, res);
   }
 );
 
 //  "/:cid",  emptyCart
 cartsRouter.delete(
-  "/:cid",
+  ["/:cid?", "/"],
   passport.authenticate("current", {
     session: false,
     failureRedirect: "/login",
   }),
-  CartController.emptyCart
+  async (req, res) => {
+    CartController.emptyCart(req, res);
+  }
 );
 
 //   "/:cid", updateOneCarts

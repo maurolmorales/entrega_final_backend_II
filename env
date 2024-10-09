@@ -1,5 +1,5 @@
 PORT=8080
 BASE_URL=http://localhost:8080
-MONGODB_URI=mongodb://localhost:27017
+MONGODB_URI=mongodb+srv://maurolmorales:nyn5N1iML06sRMIK@cluster0.bvpqg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+DB_NAME=Integrador
 SECRET=codercoder123
-DB_NAME=integrador

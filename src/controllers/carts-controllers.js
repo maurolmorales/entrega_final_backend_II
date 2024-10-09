@@ -49,16 +49,25 @@ export class CartController {
     }
   };
 
-  static addProdToCart = async (pid, cid, req, res, userParam) => {
+  static addProdToCart = async (req, res) => {
     try {
+      let pid = req.params.pid;
+      let cid = req.params.cid;
+      let userParam = req.user;
+
+      // Si no se envía por parámetro el "cid", entonces que se use el carrito del usuario.
+      if (!cid || cid === ":cid") { cid = req.user.cart }
+
       let cart = await CartService.addProdToCart(pid, cid, req, res, userParam);
       if (!cart) {
         await CartService.res
           .status(404)
           .json({ error: "Cart list not found no encontrada" }, res.newToken);
       }
+      res.setHeader("Content-Type", "application/json");
       res.status(201).json({ message: "product added to cart successfully" });
     } catch (error) {
+      res.setHeader("Content-Type", "application/json");
       res.status(500).json({ error: "error trying to get cart" });
     }
   };
@@ -148,18 +157,16 @@ export class CartController {
 
   static emptyCart = async (req, res) => {
     try {
-      const { cid } = req.params;
-
-      // Llama al manager para eliminar el producto
+      let cid = req.params.cid;
+      if (!cid || cid === ":cid") { cid = req.user.cart }
       const updatedCart = await CartService.emptyCart(cid);
 
+      console.log("updat", req);
       if (!updatedCart) {
-        return res
-          .status(404)
-          .json({ error: "Carrito o producto no encontrado" });
+        throw new Error(" Carrito o producto no encontrado ");
       }
       // Redirige o responde según sea necesario
-      res.status(200).json({ error: "Carrito vaciado correctamente" }).redirect("/carts")
+      res.status(200).json({ error: "Carrito vaciado correctamente" });
     } catch (error) {
       res
         .status(500)
@@ -183,8 +190,15 @@ export class CartController {
     }
   };
 
-  static delProdToCart = async (pid, cid, req, res, userParam) => {
+  static delProdToCart = async (req, res) => {
     try {
+      let pid = req.params.pid;
+      let cid = req.params.cid;
+      let userParam = req.user;
+
+      // Si no se envía por parámetro el "cid", entonces que se use el carrito del usuario.
+      if (!cid || cid === ":cid") { cid = req.user.cart }
+
       const cart = await CartService.delProdToCart(
         pid,
         cid,
@@ -238,11 +252,9 @@ export class CartController {
 
       if (conStock.length === 0) {
         res.setHeader("Content-Type", "application/json");
-        return res
-          .status(400)
-          .json({
-            error: `No hay ítems en condiciones de ser comprados...!!!`,
-          });
+        return res.status(400).json({
+          error: `No hay ítems en condiciones de ser comprados...!!!`,
+        });
       }
 
       let amount = conStock.reduce(
@@ -266,12 +278,10 @@ export class CartController {
       return res.status(200).json({ ticket });
     } catch (error) {
       console.error("error: ", error.message);
-      return res
-        .status(500)
-        .json({
-          error: "Error al completar la compra",
-          detalle: error.message,
-        });
+      return res.status(500).json({
+        error: "Error al completar la compra",
+        detalle: error.message,
+      });
     }
   };
 }

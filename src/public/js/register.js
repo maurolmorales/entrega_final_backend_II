@@ -17,7 +17,7 @@ document
     };
 
     try {
-      const response = await fetch("/api/sessions/registro", {
+      const response = await fetch("/api/sessions/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

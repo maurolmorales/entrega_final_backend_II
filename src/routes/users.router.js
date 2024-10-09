@@ -9,9 +9,9 @@ import {
 } from "../controllers/users.controllers.js";
 const userRouter = Router();
 
-//registro
+//register
 userRouter.post(
-  "/registro",
+  "/register",
   passport.authenticate("registro", {
     session: false,
     failureRedirect: "/login",

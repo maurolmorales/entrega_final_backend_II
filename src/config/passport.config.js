@@ -24,7 +24,7 @@ const buscarToken = (req) => {
 };
 
 const initPassport = () => {
-  //registro
+  //registrer
   passport.use(
     "registro", // nombre de la estrategia asignada
     new passportLocal.Strategy(
