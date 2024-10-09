@@ -22,15 +22,12 @@ export class Utils {
 
   static passportCall = (estrategia) => (req, res, next) => {
     passport.authenticate(estrategia, (error, usuario, info) => {
-      if (error) {
-        return next(error);
-      }
+      if (error) { return next(error) }
 
       if (!usuario) {
         res.setHeader("Content-Type", "application/json");
-        return res
-          .status(400)
-          .json({ error: `${info.message ? info.message : info.toString()}` });
+        return res.status(401).send({error:info.messages?info.messages:info.toString()})
+          //.json({ error: `${info.message ? info.message : info.toString()}` });
       }
 
       req.user = usuario;

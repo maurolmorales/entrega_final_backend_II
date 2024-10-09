@@ -161,7 +161,6 @@ export class CartController {
       if (!cid || cid === ":cid") { cid = req.user.cart }
       const updatedCart = await CartService.emptyCart(cid);
 
-      console.log("updat", req);
       if (!updatedCart) {
         throw new Error(" Carrito o producto no encontrado ");
       }
@@ -230,7 +229,7 @@ export class CartController {
 
       if (!cart) {
         res.setHeader("Content-Type", "application/json");
-        return res.status(400).json({ error: `No existe cart ${cid}` });
+        return res.status(400).json({ error: "Cart Not Found " });
       }
 
       for (const p of cart.products) {

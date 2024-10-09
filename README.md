@@ -1,14 +1,40 @@
 # Entrega Final del Proyecto
 
-## Páginas
-### Products:
-Muestra una galería de productos con soporte para paginación, accesible mediante el controlador (getAllProducts). Los usuarios pueden filtrar los productos mediante query params, por ejemplo, ( /products/?sort=asc&query=Audio ). Cada ítem en la galería muestra detalles del producto y ofrece un enlace para ver más información (getOneProduct). Además, incluye un botón para agregar el producto al carrito con estado 'open'. Si no existe un carrito abierto, se crea uno automáticamente (addProdToCart).
+## Carpetas
+### routes: 
+Definen las rutas del servidor (endpoints) y especifican qué controlador manejará cada solicitud (por ejemplo, GET, POST, PUT, DELETE).
+Ejemplo: /api/products, /login.
+### controllers:
+Contienen la lógica que responde a las solicitudes HTTP entrantes. Llaman a los servicios adecuados y manejan la respuesta que se enviará al cliente.
+Ejemplo: Controlar el flujo de una solicitud para agregar un producto al carrito.
+### services:
+Contienen la lógica de negocio de la aplicación. Interactúan con los DAOs o APIs externas, pero no manejan la respuesta directamente.
+Ejemplo: Calcular el precio total de un pedido.
+### dao:
+Se encargan de la interacción directa con la base de datos, como leer, actualizar o eliminar datos.
+Ejemplo: Realizar consultas MongoDB para obtener productos o carritos.
+- #### dto:  
+  Son objetos simples que se utilizan para transportar datos entre diferentes capas de la aplicación, asegurando un formato específico.
+  Ejemplo: Estructurar los datos de un ticket de compra antes de enviarlo a la base de datos.
+- #### models:
+  Representan las entidades del negocio y su estructura de datos. Se definen los esquemas de los datos para interactuar con la base de datos (por ejemplo, usando Mongoose).
+  Ejemplo: Definir el esquema de un "Usuario" o "Producto".
+### middlewares:
+Son funciones que se ejecutan antes de las rutas, controlando aspectos como la autenticación, autorización o el manejo de errores.
+Ejemplo: Verificar que el usuario esté autenticado antes de permitirle acceder a una ruta.
+### public: 
+Contiene los archivos estáticos accesibles desde el frontend, como imágenes, estilos CSS, y archivos JavaScript del cliente.
+Ejemplo: Archivos de estilos o imágenes.
+### views:
+Son las plantillas de HTML que se renderizan para el cliente. Pueden usar motores de plantillas como Handlebars, EJS, o Pug para generar HTML dinámico.
+Ejemplo: La vista del carrito o el login.
+### config: 
+Contiene la configuración del proyecto, como las claves de la base de datos, configuración de APIs externas, o variables de entorno.
+Ejemplo: Configuración de las credenciales de conexión a MongoDB.
+### bd:
+Es la capa que maneja las conexiones a la base de datos. En proyectos Node.js, esto podría ser la lógica para conectar a MongoDB, MySQL, o cualquier base de datos.
+Ejemplo: Configurar Mongoose para conectarse a una base de datos MongoDB.
 
-### Carts:
-Muestra una galería de carritos con status 'complete' y 'open' (getAllCarts). Cada carrito lista la cantidad de productos que contiene, acompañados de un botón para eliminarlos (delProdToCart). También se muestra información como el ID del carrito, la fecha de creación y el status actual. Al final, se incluye una botonera que permite navegar al carrito seleccionado (getOneCart), vaciarlo de productos (emptyCart) o cerrarlo cambiando su status de 'open' a 'complete' (closeCart).
-
-###  Real Time Products:
-Implementado con Socket.IO, permite ingresar un producto a la base de datos a través de un formulario, reflejando instantáneamente el nuevo producto en una galería limitada a los 3 últimos ítems agregados. Cada ítem en la galería incluye un botón para eliminar el producto correspondiente (deleteOneProduct).
 
 ## Estructura
 ### Ruta Products:

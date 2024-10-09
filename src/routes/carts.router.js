@@ -4,7 +4,7 @@ import { Auth } from "../middlewares/auth.js";
 import { CartController } from "../controllers/carts-controllers.js";
 const cartsRouter = Router();
 
-// "/", getAllCarts
+// "/"_______getAllCarts
 cartsRouter.get(
   "/",
   passport.authenticate("current", {
@@ -14,7 +14,7 @@ cartsRouter.get(
   CartController.getAllCarts
 );
 
-// "/", getCurrentCart
+// "/"_______getCurrentCart
 cartsRouter.get(
   "/usercart",
   passport.authenticate("current", {
@@ -23,7 +23,7 @@ cartsRouter.get(
   CartController.getCurrentCart
 );
 
-// "/:cid" getOneCart
+// "/:cid"___getOneCart
 cartsRouter.get(
   "/:cid",
   passport.authenticate("current", {
@@ -33,7 +33,7 @@ cartsRouter.get(
   CartController.getOneCart
 );
 
-//  "/:pid" addProdToCart cambiado a |||||| :cid/product/:pid ||||||
+// "/:cid/product/:pid________addProdToCart
 cartsRouter.post(
   ["/:cid?/product/:pid", "/product/:pid"],
   passport.authenticate("current", {
@@ -45,7 +45,7 @@ cartsRouter.post(
   }
 );
 
-// "/:cid/product/:pid", delProdToCart
+// "/:cid/product/:pid"_______delProdToCart
 cartsRouter.delete(
   ["/:cid?/product/:pid", "/product/:pid"],
   passport.authenticate("current", {
@@ -58,7 +58,7 @@ cartsRouter.delete(
   }
 );
 
-//  "/:cid",  emptyCart
+//  "/:cid"_______emptyCart
 cartsRouter.delete(
   ["/:cid?", "/"],
   passport.authenticate("current", {
@@ -70,7 +70,7 @@ cartsRouter.delete(
   }
 );
 
-//   "/:cid", updateOneCarts
+//   "/:cid"__________updateOneCarts
 cartsRouter.put(
   "/:cid",
   passport.authenticate("current", {
@@ -80,13 +80,15 @@ cartsRouter.put(
   CartController.updateOneCart
 );
 
-// "/:cid/purchase", completePurchase
+// "/:cid/purchase"______completePurchase
 cartsRouter.post(
   "/:cid/purchase",
   passport.authenticate("current", {
     session: false,
   }),
-  CartController.completePurchase
+  async (req, res) => {
+    CartController.completePurchase(req, res);
+  }
 );
 
 export { cartsRouter };

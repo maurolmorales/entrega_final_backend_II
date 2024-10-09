@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d2551a49-759d-47af-9926-79cce55b865f",
+		"_postman_id": "e9047d57-608d-4d6c-918f-09dbf1ca77ee",
 		"name": "API_Backend_MauroMorales",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "37122664"
@@ -30,7 +30,7 @@
 					"path": [
 						"api",
 						"sessions",
-						"registro"
+						"register"
 					]
 				}
 			},
@@ -113,7 +113,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/products/PID",
+					"raw": "http://localhost:8080/api/products/:pid",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -122,7 +122,13 @@
 					"path": [
 						"api",
 						"products",
-						"PID"
+						":pid"
+					],
+					"variable": [
+						{
+							"key": "pid",
+							"value": "66cfba87e3b52fc3de1a5c41"
+						}
 					]
 				}
 			},
@@ -135,7 +141,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": null,\n    \"title\": \"Laptop HP\",\n    \"description\": \"Laptop HP de alta gama con procesador Intel i7.\",\n    \"code\": \"HP1234\",\n    \"price\": 1200,\n    \"status\": true,\n    \"stock\": 15,\n    \"category\": \"Electrónica\",\n    \"thumbnails\": [\n      \"images/laptop_hp_1.jpg\",\n      \"images/laptop_hp_2.jpg\"\n    ]\n}",
+					"raw": "{\n    \"id\": null,\n    \"title\": \"Samsung Galaxy A15\",\n    \"description\": \"128 GB Negro azulado 4 GB RAM\",\n    \"code\": \"SG1234\",\n    \"price\": 300000,\n    \"status\": true,\n    \"stock\": 15,\n    \"category\": \"Electrónica\",\n    \"thumbnails\": [\n      \"images/laptop_hp_1.jpg\",\n      \"images/laptop_hp_2.jpg\"\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -172,7 +178,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/products/PID",
+					"raw": "http://localhost:8080/api/products/:pid",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -181,7 +187,13 @@
 					"path": [
 						"api",
 						"products",
-						"PID"
+						":pid"
+					],
+					"variable": [
+						{
+							"key": "pid",
+							"value": "66cfba87e3b52fc3de1a5c41"
+						}
 					]
 				}
 			},
@@ -193,7 +205,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/products/PID",
+					"raw": "http://localhost:8080/api/products/:pid",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -202,7 +214,13 @@
 					"path": [
 						"api",
 						"products",
-						"PID"
+						":pid"
+					],
+					"variable": [
+						{
+							"key": "pid",
+							"value": "66cfba87e3b52fc3de1a5c41"
+						}
 					]
 				}
 			},
@@ -255,7 +273,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/carts/CID",
+					"raw": "http://localhost:8080/api/carts/:cid",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -264,7 +282,13 @@
 					"path": [
 						"api",
 						"carts",
-						"CID"
+						":cid"
+					],
+					"variable": [
+						{
+							"key": "cid",
+							"value": ""
+						}
 					]
 				}
 			},
@@ -276,7 +300,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/carts/PID",
+					"raw": "http://localhost:8080/api/carts/:cid/product/:pid",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -285,7 +309,26 @@
 					"path": [
 						"api",
 						"carts",
-						"PID"
+						":cid",
+						"product",
+						":pid"
+					],
+					"query": [
+						{
+							"key": "cid",
+							"value": "12312313",
+							"disabled": true
+						}
+					],
+					"variable": [
+						{
+							"key": "cid",
+							"value": ""
+						},
+						{
+							"key": "pid",
+							"value": ""
+						}
 					]
 				}
 			},
@@ -297,7 +340,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/carts/product/PID",
+					"raw": "http://localhost:8080/api/carts/:cid/product/:pid",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -306,8 +349,19 @@
 					"path": [
 						"api",
 						"carts",
+						":cid",
 						"product",
-						"PID"
+						":pid"
+					],
+					"variable": [
+						{
+							"key": "cid",
+							"value": ""
+						},
+						{
+							"key": "pid",
+							"value": ""
+						}
 					]
 				}
 			},
@@ -319,7 +373,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/carts/CID/purchase",
+					"raw": "http://localhost:8080/api/carts/:cid/purchase",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -328,8 +382,14 @@
 					"path": [
 						"api",
 						"carts",
-						"CID",
+						":cid",
 						"purchase"
+					],
+					"variable": [
+						{
+							"key": "cid",
+							"value": ""
+						}
 					]
 				}
 			},
@@ -341,7 +401,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/carts/CID",
+					"raw": "http://localhost:8080/api/carts/:cid",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -350,7 +410,13 @@
 					"path": [
 						"api",
 						"carts",
-						"CID"
+						":cid"
+					],
+					"variable": [
+						{
+							"key": "cid",
+							"value": ""
+						}
 					]
 				}
 			},

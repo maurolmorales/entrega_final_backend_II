@@ -77,23 +77,20 @@ const initPassport = () => {
           let usuario = await UsersService.getUserByEmail(username);
 
           if (!usuario) {
-            console.log("usuario No encontrado");
-            return done(null, false);
+            return done(null, false, {messages: "user not found"});
           }
 
           let validar = Utils.validatePassword(password, usuario.password);
 
           if (!validar) {
-            console.log("contraseña inválida");
-            return done(null, false);
+            return done(null, false, {messages: "invalid password" });
           }
 
           usuario = { ...usuario }; // revisar
           delete usuario.password;
           return done(null, usuario);
         } catch (error) {
-          console.log("done", error);
-          return done(error, false);
+          return done(error, false, { messages: "Error interno" });
         }
       }
     )
