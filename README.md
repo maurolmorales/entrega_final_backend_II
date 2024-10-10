@@ -26,7 +26,7 @@ Ejemplo: Verificar que el usuario esté autenticado antes de permitirle acceder 
 Contiene los archivos estáticos accesibles desde el frontend, como imágenes, estilos CSS, y archivos JavaScript del cliente.
 Ejemplo: Archivos de estilos o imágenes.
 ### views:
-Son las plantillas de HTML que se renderizan para el cliente. Pueden usar motores de plantillas como Handlebars, EJS, o Pug para generar HTML dinámico.
+Son las plantillas de HTML que se renderizan para el cliente. Pueden usar motores de plantillas como Handlebars para generar HTML dinámico.
 Ejemplo: La vista del carrito o el login.
 ### config: 
 Contiene la configuración del proyecto, como las claves de la base de datos, configuración de APIs externas, o variables de entorno.
@@ -38,21 +38,25 @@ Ejemplo: Configurar Mongoose para conectarse a una base de datos MongoDB.
 
 ## Estructura
 ### Ruta Products:
-- GET products/ Obtiene todos los productos
-- GET products/:pid Obtiene el producto indicado por id
-- POST products/ Crea un producto
-- PATCH products/:pid Actualiza un producto indicado por id
-- DELETE products/:pid Elimina un producto indicado por id
+- **GET /api/products/** *Obtiene todos los productos* 
+- **GET /api/products/:pid** Obtiene el producto indicado por id
+- **POST /api/products/** Crea un producto (admin)
+- **PATCH /api/products/:pid** Actualiza un producto indicado por id (admin)
+- **DELETE /api/products/:pid** Elimina un producto indicado por id (admin)
 
 ### Ruta Carts:
-- GET carts/ Obtiene todos los carritos
-- GET carts/:cid Obtiene el carrito indicado por id
-- POST carts/:pid Añade un producto indicado por id al carrito
-- PUT carts/:cid Actualiza el status del carrito a "Completed"
-- DELETE carts/:cid/products/:pid Elimina el producto indicado por id del carrito
-- DELETE carts/:cid Elimina la totalidad de productos del carrito
+- **GET /api/carts/** *Obtiene todos los carritos* (admin)
+- **GET /api/carts/usercart** *Obtiene el carrito del usuario logueado*
+- **GET /api/carts/:cid** *Obtiene el carrito indicado por id*
+- **POST /api/carts/:cid/products/:pid** *Añade un producto indicado por id al carrito* (user)
+- **DELETE /api/carts/:cid/products/:pid** *Elimina el producto indicado por id del carrito* (user)
+- **DELETE /api/carts/:cid** *Elimina la totalidad de productos del carrito*
+- **DELETE /api/carts/:cid/purchase** *Ejecuta la compra del carrito generando el ticket de compra*
 
 ### Ruta User:
+- **POST /api/sessions/register** *Registra un usuario nuevo*
+- **POST /api/sessions/login** *Loguea a un usuario al sistema*
+- **GET /api/sessions/current** *Obtiene la información del usuario que está actualmente autenticado en la aplicación*
 - admin:
   - User: adminCoder@coder.com
   - Contraseña: adminCod3r123
